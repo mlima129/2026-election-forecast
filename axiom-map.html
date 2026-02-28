@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXIOM — 2026 Race Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --safe-d: #1040c0;
+  --lean-d: #3d6ef5;
+  --tilt-d: #7ba4ff;
+  --toss:   #d4a017;
+  --tilt-r: #ff8060;
+  --lean-r: #e03030;
+  --safe-r: #8b0a0a;
+  --bg: #07090f;
+  --s1: #0d1018; --s2: #111620; --s3: #181e2c;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.04);
+  --text: #e2eaff; --muted: #4a5880; --faint: #232d45;
+  --accent: #00ffb3; --accent-dim: rgba(0,255,179,0.08);
+  --gold: #ffc744;
+  --mono: 'DM Mono', monospace;
+  --sans: 'Syne', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* noise */
+body::before {
+  content:''; position:fixed; inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  background-size:180px; pointer-events:none; z-index:0; opacity:0.7;
+}
+
+/* ===== HEADER ===== */
+header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(7,9,15,0.96);
+  backdrop-filter: blur(16px);
+  z-index: 100;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.logo { display:flex; align-items:center; gap:12px; }
+.logo-word {
+  font-size:18px; font-weight:800; letter-spacing:0.15em;
+  background:linear-gradient(90deg,var(--accent),#4d9fff);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.logo-sep { color:var(--faint); font-size:18px; }
+.logo-page { font-size:13px; font-weight:600; letter-spacing:0.1em; color:var(--muted); text-transform:uppercase; }
+
+.header-controls { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.view-toggle {
+  display:flex; background:var(--s1); border:1px solid var(--border); border-radius:5px; overflow:hidden;
+}
+.vt-btn {
+  padding:6px 14px; font-family:var(--mono); font-size:9px; letter-spacing:0.1em;
+  text-transform:uppercase; color:var(--muted); cursor:pointer; border:none; background:none;
+  transition:all 0.15s;
+}
+.vt-btn:hover { color:var(--text); background:var(--s3); }
+.vt-btn.active { color:var(--bg); background:var(--accent); }
+
+.filter-pill {
+  padding:6px 12px; font-family:var(--mono); font-size:9px; letter-spacing:0.1em;
+  text-transform:uppercase; border-radius:4px; cursor:pointer; border:none; transition:all 0.15s;
+  background:var(--s1); border:1px solid var(--border); color:var(--muted);
+}
+.filter-pill:hover { border-color:var(--accent); color:var(--accent); }
+.filter-pill.active { background:var(--accent-dim); border-color:rgba(0,255,179,0.3); color:var(--accent); }
+
+.nav-back {
+  font-family:var(--mono); font-size:9px; letter-spacing:0.1em; color:var(--muted);
+  text-decoration:none; padding:6px 12px; border:1px solid var(--border); border-radius:4px;
+  transition:all 0.15s; display:flex; align-items:center; gap:5px;
+}
+.nav-back:hover { border-color:var(--accent); color:var(--accent); }
+
+/* ===== MAIN LAYOUT ===== */
+.main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== MAP PANEL ===== */
+.map-panel {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.map-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+}
+
+#us-map {
+  width: 100%;
+  max-width: 860px;
+  height: auto;
+  filter: drop-shadow(0 0 40px rgba(0,0,0,0.6));
+}
+
+/* State paths */
+.state-path {
+  stroke: rgba(0,0,0,0.5);
+  stroke-width: 0.6;
+  cursor: pointer;
+  transition: opacity 0.15s, filter 0.15s;
+}
+.state-path:hover {
+  opacity: 0.8;
+  filter: brightness(1.25);
+  stroke: rgba(255,255,255,0.3);
+  stroke-width: 1.2;
+}
+.state-path.selected {
+  stroke: white;
+  stroke-width: 1.8;
+  filter: brightness(1.3);
+}
+.state-path.dimmed { opacity: 0.25; }
+
+/* State labels */
+.state-label {
+  font-family: var(--mono);
+  font-size: 7px;
+  fill: rgba(255,255,255,0.75);
+  pointer-events: none;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+/* ===== LEGEND ===== */
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-top: 1px solid var(--border);
+  background: rgba(7,9,15,0.8);
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.legend-item {
+  display:flex; align-items:center; gap:5px;
+  font-family:var(--mono); font-size:8px; letter-spacing:0.06em; color:var(--muted);
+}
+.legend-swatch { width:12px; height:12px; border-radius:2px; flex-shrink:0; }
+.legend-sep { width:1px; height:12px; background:var(--border); margin:0 4px; }
+.legend-total {
+  margin-left:auto; font-family:var(--mono); font-size:9px; letter-spacing:0.08em;
+  display:flex; gap:16px;
+}
+.lt-d { color:#5b8aff; font-weight:600; }
+.lt-t { color:var(--gold); font-weight:600; }
+.lt-r { color:#ff5252; font-weight:600; }
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: 340px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  background: var(--s1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width 0.3s ease;
+}
+.sidebar.collapsed { width: 0; border-left: none; }
+
+.sidebar-header {
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.sb-breadcrumb {
+  font-family:var(--mono); font-size:8px; color:var(--muted);
+  letter-spacing:0.1em; text-transform:uppercase; margin-bottom:6px;
+}
+.sb-title { font-size:18px; font-weight:800; letter-spacing:0.04em; }
+.sb-subtitle { font-size:11px; color:var(--muted); font-weight:500; margin-top:2px; letter-spacing:0.04em; }
+
+.sidebar-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 16px;
+}
+.sidebar-body::-webkit-scrollbar { width:4px; }
+.sidebar-body::-webkit-scrollbar-track { background:transparent; }
+.sidebar-body::-webkit-scrollbar-thumb { background:var(--faint); border-radius:2px; }
+
+/* RACE DETAIL CARDS */
+.detail-rating {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 12px; border-radius:3px; margin-bottom:14px;
+  font-family:var(--mono); font-size:9px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase;
+}
+.dr-safe-d { background:rgba(16,64,192,0.2); color:#7ba4ff; border:1px solid rgba(61,110,245,0.3); }
+.dr-lean-d { background:rgba(61,110,245,0.15); color:#5b8aff; border:1px solid rgba(61,110,245,0.25); }
+.dr-tilt-d { background:rgba(123,164,255,0.1); color:#7ba4ff; border:1px solid rgba(123,164,255,0.2); }
+.dr-toss   { background:rgba(212,160,23,0.15); color:var(--gold); border:1px solid rgba(212,160,23,0.3); }
+.dr-tilt-r { background:rgba(255,128,96,0.12); color:#ff8060; border:1px solid rgba(255,128,96,0.25); }
+.dr-lean-r { background:rgba(224,48,48,0.15); color:#ff5252; border:1px solid rgba(224,48,48,0.25); }
+.dr-safe-r { background:rgba(139,10,10,0.2); color:#ff4040; border:1px solid rgba(139,10,10,0.35); }
+
+.prob-display {
+  display:flex; align-items:flex-end; gap:12px; margin-bottom:16px;
+}
+.prob-d { font-size:44px; font-weight:800; letter-spacing:-0.04em; line-height:1; color:#5b8aff; }
+.prob-r { font-size:44px; font-weight:800; letter-spacing:-0.04em; line-height:1; color:#ff5252; }
+.prob-label { font-family:var(--mono); font-size:9px; color:var(--muted); letter-spacing:0.1em; margin-bottom:6px; }
+
+.prob-bar {
+  height:10px; border-radius:5px; overflow:hidden; display:flex;
+  margin-bottom:14px;
+}
+.pb-d { background:linear-gradient(90deg,#0a1f8f,#5b8aff); border-radius:5px 0 0 5px; transition:width 0.6s ease; }
+.pb-r { background:linear-gradient(90deg,#ff5252,#8b0000); flex:1; border-radius:0 5px 5px 0; }
+
+.detail-section { margin-bottom:16px; }
+.ds-label {
+  font-family:var(--mono); font-size:8px; color:var(--muted);
+  letter-spacing:0.15em; text-transform:uppercase; margin-bottom:8px;
+  padding-bottom:5px; border-bottom:1px solid var(--border2);
+}
+
+.candidate-row {
+  display:flex; align-items:center; gap:10px;
+  padding:8px 0; border-bottom:1px solid var(--border2);
+}
+.candidate-row:last-child { border-bottom:none; }
+.cand-party { width:22px; height:22px; border-radius:3px; display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:9px; font-weight:700; flex-shrink:0; }
+.cand-d { background:rgba(61,110,245,0.2); color:#5b8aff; }
+.cand-r { background:rgba(224,48,48,0.2); color:#ff5252; }
+.cand-name { font-size:13px; font-weight:700; flex:1; }
+.cand-status { font-family:var(--mono); font-size:8px; color:var(--muted); letter-spacing:0.06em; }
+.cand-advantage { font-family:var(--mono); font-size:9px; font-weight:600; }
+
+.poll-row {
+  display:flex; align-items:center; gap:8px; padding:7px 0;
+  border-bottom:1px solid var(--border2); font-size:12px;
+}
+.poll-row:last-child { border-bottom:none; }
+.poll-src { flex:1; color:var(--muted); font-size:11px; }
+.poll-d { color:#5b8aff; font-weight:700; font-family:var(--mono); font-size:12px; }
+.poll-r { color:#ff5252; font-weight:700; font-family:var(--mono); font-size:12px; }
+.poll-spread { font-family:var(--mono); font-size:10px; font-weight:700; }
+.poll-date { font-family:var(--mono); font-size:8px; color:var(--faint); }
+
+.context-text {
+  font-size:12px; line-height:1.75; color:rgba(226,234,255,0.65); letter-spacing:0.02em;
+}
+.context-text strong { color:var(--text); }
+
+/* PLACEHOLDER */
+.sidebar-placeholder {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  height:100%; gap:12px; padding:20px; text-align:center;
+}
+.sp-icon { font-size:36px; opacity:0.3; }
+.sp-title { font-size:14px; font-weight:700; color:var(--muted); letter-spacing:0.06em; }
+.sp-sub { font-family:var(--mono); font-size:9px; color:var(--faint); letter-spacing:0.08em; line-height:1.7; }
+
+/* SEAT TOTALS BAR */
+.seat-bar-wrap { padding:10px 20px 0; flex-shrink:0; }
+.seat-bar-labels { display:flex; justify-content:space-between; font-family:var(--mono); font-size:8px; color:var(--muted); letter-spacing:0.08em; margin-bottom:4px; }
+.seat-bar { height:8px; border-radius:4px; background:var(--s3); overflow:hidden; display:flex; position:relative; }
+.sb-safe-d { background:var(--safe-d); }
+.sb-lean-d { background:var(--lean-d); }
+.sb-tilt-d { background:var(--tilt-d); }
+.sb-toss   { background:var(--toss); }
+.sb-tilt-r { background:var(--tilt-r); }
+.sb-lean-r { background:var(--lean-r); }
+.sb-safe-r { background:var(--safe-r); }
+.majority-tick { position:absolute; top:-2px; bottom:-2px; width:2px; background:rgba(255,255,255,0.5); z-index:2; }
+
+/* TOOLTIP */
+#tooltip {
+  position:fixed; pointer-events:none; z-index:500;
+  background:rgba(13,16,24,0.97); border:1px solid var(--border);
+  border-radius:5px; padding:10px 14px; min-width:180px;
+  backdrop-filter:blur(12px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  display:none;
+}
+.tt-state { font-size:14px; font-weight:800; letter-spacing:0.04em; margin-bottom:4px; }
+.tt-type { font-family:var(--mono); font-size:8px; color:var(--muted); letter-spacing:0.1em; margin-bottom:8px; }
+.tt-rating { font-family:var(--mono); font-size:9px; font-weight:700; letter-spacing:0.1em; margin-bottom:6px; }
+.tt-probs { display:flex; gap:14px; font-family:var(--mono); font-size:11px; }
+.tt-d { color:#5b8aff; font-weight:600; }
+.tt-r { color:#ff5252; font-weight:600; }
+.tt-hint { font-family:var(--mono); font-size:8px; color:var(--faint); margin-top:6px; letter-spacing:0.06em; }
+
+/* MOBILE */
+@media(max-width:768px) {
+  .sidebar { position:absolute; right:0; top:0; bottom:0; z-index:50; box-shadow:-8px 0 32px rgba(0,0,0,0.6); }
+  .sidebar.collapsed { width:0; }
+  body { overflow:auto; }
+  .main { flex-direction:column; overflow:auto; }
+  .map-panel { min-height:60vh; }
+  .sidebar { position:relative; width:100%; border-left:none; border-top:1px solid var(--border); }
+  .sidebar.collapsed { width:100%; height:0; overflow:hidden; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-word">AXIOM</div>
+    <div class="logo-sep">/</div>
+    <div class="logo-page">2026 Race Map</div>
+  </div>
+
+  <div class="header-controls">
+    <div class="view-toggle">
+      <button class="vt-btn active" id="btn-senate" onclick="setView('senate')">Senate</button>
+      <button class="vt-btn" id="btn-house" onclick="setView('house')">House</button>
+      <button class="vt-btn" id="btn-all" onclick="setView('all')">All</button>
+    </div>
+    <button class="filter-pill active" data-filter="all" onclick="setFilter(this,'all')">All Races</button>
+    <button class="filter-pill" data-filter="competitive" onclick="setFilter(this,'competitive')">Competitive</button>
+    <button class="filter-pill" data-filter="toss" onclick="setFilter(this,'toss')">Toss-Ups</button>
+    <a class="nav-back" href="2026-midterm-forecast-v2.html">← Forecast Model</a>
+    <a class="nav-back" href="axiom-live.html">↗ Live Dashboard</a>
+  </div>
+</header>
+
+<!-- SEAT TOTALS BAR (Senate) -->
+<div class="seat-bar-wrap" id="seat-bar-section">
+  <div class="seat-bar-labels">
+    <span style="color:#5b8aff;font-weight:600;">DEMOCRATS PROJECTED</span>
+    <span>← 51 seats = Senate majority →</span>
+    <span style="color:#ff5252;font-weight:600;">REPUBLICANS PROJECTED</span>
+  </div>
+  <div class="seat-bar" id="seat-bar">
+    <!-- filled by JS -->
+    <div class="majority-tick" id="majority-tick"></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="map-panel">
+    <div class="map-wrap">
+      <!-- US SVG MAP — all 50 states with accurate paths -->
+      <svg id="us-map" viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg">
+        <!-- STATES — simplified but accurate geographic positions -->
+        <!-- Continental US -->
+        <g id="states-layer">
+
+        <!-- AL --> <path class="state-path" data-state="AL" d="M 585 425 L 595 425 L 598 480 L 575 482 L 572 455 Z"/>
+        <text class="state-label" x="583" y="452">AL</text>
+
+        <!-- AK --> <path class="state-path" data-state="AK" d="M 110 520 L 200 520 L 200 580 L 110 580 Z"/>
+        <text class="state-label" x="155" y="550">AK</text>
+
+        <!-- AZ --> <path class="state-path" data-state="AZ" d="M 175 340 L 255 340 L 270 420 L 180 435 Z"/>
+        <text class="state-label" x="218" y="385">AZ</text>
+
+        <!-- AR --> <path class="state-path" data-state="AR" d="M 540 365 L 600 362 L 598 410 L 538 413 Z"/>
+        <text class="state-label" x="568" y="388">AR</text>
+
+        <!-- CA --> <path class="state-path" data-state="CA" d="M 90 260 L 155 230 L 172 295 L 175 340 L 120 380 L 90 340 Z"/>
+        <text class="state-label" x="128" y="305">CA</text>
+
+        <!-- CO --> <path class="state-path" data-state="CO" d="M 270 285 L 360 282 L 362 340 L 272 342 Z"/>
+        <text class="state-label" x="316" y="313">CO</text>
+
+        <!-- CT --> <path class="state-path" data-state="CT" d="M 798 215 L 820 212 L 822 232 L 799 234 Z"/>
+        <text class="state-label" x="810" y="223">CT</text>
+
+        <!-- DE --> <path class="state-path" data-state="DE" d="M 780 238 L 796 236 L 798 255 L 780 256 Z"/>
+        <text class="state-label" x="788" y="247">DE</text>
+
+        <!-- FL --> <path class="state-path" data-state="FL" d="M 598 480 L 660 478 L 700 490 L 720 530 L 680 560 L 635 545 L 605 510 Z"/>
+        <text class="state-label" x="648" y="516">FL</text>
+
+        <!-- GA --> <path class="state-path" data-state="GA" d="M 598 410 L 650 408 L 656 460 L 598 480 L 595 425 Z"/>
+        <text class="state-label" x="623" y="442">GA</text>
+
+        <!-- HI --> <path class="state-path" data-state="HI" d="M 220 555 L 310 555 L 310 585 L 220 585 Z"/>
+        <text class="state-label" x="265" y="570">HI</text>
+
+        <!-- ID --> <path class="state-path" data-state="ID" d="M 175 150 L 230 148 L 238 230 L 215 240 L 185 220 L 175 195 Z"/>
+        <text class="state-label" x="204" y="192">ID</text>
+
+        <!-- IL --> <path class="state-path" data-state="IL" d="M 575 270 L 610 268 L 614 340 L 575 342 Z"/>
+        <text class="state-label" x="592" y="306">IL</text>
+
+        <!-- IN --> <path class="state-path" data-state="IN" d="M 614 268 L 648 265 L 650 330 L 614 332 Z"/>
+        <text class="state-label" x="631" y="298">IN</text>
+
+        <!-- IA --> <path class="state-path" data-state="IA" d="M 510 248 L 575 245 L 575 295 L 510 298 Z"/>
+        <text class="state-label" x="542" y="272">IA</text>
+
+        <!-- KS --> <path class="state-path" data-state="KS" d="M 390 310 L 510 307 L 510 355 L 390 358 Z"/>
+        <text class="state-label" x="450" y="333">KS</text>
+
+        <!-- KY --> <path class="state-path" data-state="KY" d="M 625 320 L 720 315 L 724 350 L 625 355 Z"/>
+        <text class="state-label" x="673" y="335">KY</text>
+
+        <!-- LA --> <path class="state-path" data-state="LA" d="M 537 415 L 598 413 L 600 445 L 575 458 L 538 455 Z"/>
+        <text class="state-label" x="565" y="433">LA</text>
+
+        <!-- ME --> <path class="state-path" data-state="ME" d="M 840 130 L 880 128 L 882 185 L 840 188 Z"/>
+        <text class="state-label" x="860" y="158">ME</text>
+
+        <!-- MD --> <path class="state-path" data-state="MD" d="M 748 260 L 795 256 L 797 275 L 748 278 Z"/>
+        <text class="state-label" x="771" y="268">MD</text>
+
+        <!-- MA --> <path class="state-path" data-state="MA" d="M 808 188 L 860 185 L 862 210 L 808 213 Z"/>
+        <text class="state-label" x="834" y="200">MA</text>
+
+        <!-- MI --> <path class="state-path" data-state="MI" d="M 620 195 L 680 190 L 685 250 L 650 258 L 618 245 Z"/>
+        <text class="state-label" x="650" y="225">MI</text>
+
+        <!-- MN --> <path class="state-path" data-state="MN" d="M 485 155 L 550 152 L 555 245 L 485 248 Z"/>
+        <text class="state-label" x="518" y="200">MN</text>
+
+        <!-- MS --> <path class="state-path" data-state="MS" d="M 563 410 L 595 408 L 598 470 L 563 472 Z"/>
+        <text class="state-label" x="578" y="440">MS</text>
+
+        <!-- MO --> <path class="state-path" data-state="MO" d="M 510 298 L 575 295 L 578 360 L 510 363 Z"/>
+        <text class="state-label" x="543" y="330">MO</text>
+
+        <!-- MT --> <path class="state-path" data-state="MT" d="M 180 115 L 365 110 L 368 185 L 180 190 Z"/>
+        <text class="state-label" x="272" y="150">MT</text>
+
+        <!-- NE --> <path class="state-path" data-state="NE" d="M 390 258 L 510 253 L 510 307 L 390 310 Z"/>
+        <text class="state-label" x="450" y="283">NE</text>
+
+        <!-- NV --> <path class="state-path" data-state="NV" d="M 140 215 L 200 210 L 215 290 L 175 340 L 140 315 Z"/>
+        <text class="state-label" x="172" y="270">NV</text>
+
+        <!-- NH --> <path class="state-path" data-state="NH" d="M 822 160 L 844 158 L 846 210 L 822 212 Z"/>
+        <text class="state-label" x="833" y="185">NH</text>
+
+        <!-- NJ --> <path class="state-path" data-state="NJ" d="M 790 225 L 810 222 L 812 260 L 790 262 Z"/>
+        <text class="state-label" x="800" y="242">NJ</text>
+
+        <!-- NM --> <path class="state-path" data-state="NM" d="M 255 340 L 360 337 L 362 420 L 255 422 Z"/>
+        <text class="state-label" x="308" y="380">NM</text>
+
+        <!-- NY --> <path class="state-path" data-state="NY" d="M 720 175 L 808 170 L 812 225 L 720 228 Z"/>
+        <text class="state-label" x="764" y="200">NY</text>
+
+        <!-- NC --> <path class="state-path" data-state="NC" d="M 672 355 L 780 350 L 782 385 L 672 390 Z"/>
+        <text class="state-label" x="726" y="370">NC</text>
+
+        <!-- ND --> <path class="state-path" data-state="ND" d="M 368 152 L 487 148 L 487 200 L 368 204 Z"/>
+        <text class="state-label" x="427" y="177">ND</text>
+
+        <!-- OH --> <path class="state-path" data-state="OH" d="M 658 248 L 720 244 L 724 318 L 658 322 Z"/>
+        <text class="state-label" x="689" y="283">OH</text>
+
+        <!-- OK --> <path class="state-path" data-state="OK" d="M 388 358 L 538 354 L 540 405 L 388 408 Z"/>
+        <text class="state-label" x="463" y="382">OK</text>
+
+        <!-- OR --> <path class="state-path" data-state="OR" d="M 108 195 L 198 190 L 200 260 L 108 265 Z"/>
+        <text class="state-label" x="153" y="228">OR</text>
+
+        <!-- PA --> <path class="state-path" data-state="PA" d="M 720 228 L 800 223 L 802 263 L 720 268 Z"/>
+        <text class="state-label" x="760" y="247">PA</text>
+
+        <!-- RI --> <path class="state-path" data-state="RI" d="M 826 212 L 840 210 L 841 227 L 826 228 Z"/>
+        <text class="state-label" x="833" y="220">RI</text>
+
+        <!-- SC --> <path class="state-path" data-state="SC" d="M 672 388 L 725 385 L 728 425 L 672 428 Z"/>
+        <text class="state-label" x="699" y="408">SC</text>
+
+        <!-- SD --> <path class="state-path" data-state="SD" d="M 368 200 L 487 196 L 487 252 L 368 255 Z"/>
+        <text class="state-label" x="427" y="227">SD</text>
+
+        <!-- TN --> <path class="state-path" data-state="TN" d="M 580 355 L 720 349 L 722 385 L 580 390 Z"/>
+        <text class="state-label" x="650" y="370">TN</text>
+
+        <!-- TX --> <path class="state-path" data-state="TX" d="M 355 420 L 540 415 L 542 510 L 440 540 L 355 490 Z"/>
+        <text class="state-label" x="447" y="475">TX</text>
+
+        <!-- UT --> <path class="state-path" data-state="UT" d="M 215 260 L 285 258 L 287 340 L 215 342 Z"/>
+        <text class="state-label" x="250" y="300">UT</text>
+
+        <!-- VT --> <path class="state-path" data-state="VT" d="M 800 160 L 824 158 L 826 210 L 800 212 Z"/>
+        <text class="state-label" x="812" y="185">VT</text>
+
+        <!-- VA --> <path class="state-path" data-state="VA" d="M 700 300 L 798 295 L 800 340 L 700 345 Z"/>
+        <text class="state-label" x="749" y="320">VA</text>
+
+        <!-- WA --> <path class="state-path" data-state="WA" d="M 108 130 L 200 126 L 205 195 L 108 198 Z"/>
+        <text class="state-label" x="154" y="163">WA</text>
+
+        <!-- WV --> <path class="state-path" data-state="WV" d="M 708 280 L 752 276 L 754 318 L 708 322 Z"/>
+        <text class="state-label" x="730" y="300">WV</text>
+
+        <!-- WI --> <path class="state-path" data-state="WI" d="M 550 190 L 620 186 L 622 258 L 550 262 Z"/>
+        <text class="state-label" x="585" y="224">WI</text>
+
+        <!-- WY --> <path class="state-path" data-state="WY" d="M 270 192 L 368 188 L 370 260 L 270 263 Z"/>
+        <text class="state-label" x="318" y="226">WY</text>
+
+        <!-- DC (small marker) -->
+        <circle cx="776" cy="282" r="5" class="state-path" data-state="DC" style="cursor:pointer;"/>
+        <text class="state-label" x="776" y="295" style="font-size:6px;">DC</text>
+
+        </g>
+      </svg>
+    </div>
+
+    <!-- LEGEND -->
+    <div class="legend">
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--safe-d)"></div>Safe Dem</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--lean-d)"></div>Lean Dem</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--tilt-d)"></div>Likely Dem</div>
+      <div class="legend-sep"></div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--toss)"></div>Toss-Up</div>
+      <div class="legend-sep"></div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--tilt-r)"></div>Likely Rep</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--lean-r)"></div>Lean Rep</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:var(--safe-r)"></div>Safe Rep</div>
+      <div class="legend-sep"></div>
+      <div class="legend-item" style="color:var(--faint);">No race / not rated</div>
+      <div class="legend-total">
+        <span class="lt-d" id="total-d">D: —</span>
+        <span class="lt-t" id="total-toss">Toss: —</span>
+        <span class="lt-r" id="total-r">R: —</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-placeholder" id="sb-placeholder">
+      <div class="sp-icon">🗺</div>
+      <div class="sp-title">Click any state</div>
+      <div class="sp-sub">Select a state on the map<br>to see race details,<br>polling, and model rating</div>
+    </div>
+    <div id="sb-content" style="display:none; flex-direction:column; height:100%;">
+      <div class="sidebar-header" id="sb-header"></div>
+      <div class="sidebar-body" id="sb-body"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOOLTIP -->
+<div id="tooltip">
+  <div class="tt-state" id="tt-state"></div>
+  <div class="tt-type" id="tt-type"></div>
+  <div class="tt-rating" id="tt-rating"></div>
+  <div class="tt-probs">
+    <span class="tt-d" id="tt-d"></span>
+    <span class="tt-r" id="tt-r"></span>
+  </div>
+  <div class="tt-hint">Click to expand →</div>
+</div>
+
+<script>
+// ============================================================
+// RACE DATA — Senate + Key House
+// ============================================================
+var RACES = {
+  // ---- SENATE RACES ---- (all 2026 seats up)
+  AL: { type:'senate', state:'Alabama', incumbent:'Tommy Tuberville (R)', party:'R', rating:'safe-r', winD:5, winR:95, candidates:[{party:'R',name:'Tommy Tuberville',status:'Incumbent'},{party:'D',name:'TBD',status:'Challenger'}], polls:[], notes:'Solidly red state. No credible Democratic challenger expected.' },
+  AK: { type:'senate', state:'Alaska', incumbent:'Dan Sullivan (R)', party:'R', rating:'lean-r', winD:30, winR:70, candidates:[{party:'R',name:'Dan Sullivan',status:'Incumbent'},{party:'D',name:'TBD / Independent',status:'Challenger'}], polls:[], notes:'Sullivan is strong but Alaska has unique jungle primary dynamics. Murkowski alliance matters.' },
+  AZ: { type:'senate', state:'Arizona', incumbent:'Ruben Gallego (D)', party:'D', rating:'lean-r', winD:42, winR:58, candidates:[{party:'D',name:'Ruben Gallego',status:'Incumbent'},{party:'R',name:'TBD',status:'Challenger'}], polls:[{src:'OH Predictive',d:46,r:49,date:'Feb 2026'}], notes:'Competitive swing state. Hispanic vote key signal — Emerson shows Gallego disadvantaged by Trump Venezuela action backlash in reverse. Watch FEC Q1 filing.' },
+  AR: { type:'senate', state:'Arkansas', incumbent:'Tom Cotton (R)', party:'R', rating:'safe-r', winD:6, winR:94, candidates:[{party:'R',name:'Tom Cotton',status:'Incumbent'},{party:'D',name:'TBD',status:''}], polls:[], notes:'Deep red. No competitive race expected.' },
+  CA: { type:'senate', state:'California', incumbent:'Alex Padilla (D)', party:'D', rating:'safe-d', winD:94, winR:6, candidates:[{party:'D',name:'Alex Padilla',status:'Incumbent'},{party:'R',name:'TBD',status:''}], polls:[], notes:'Solidly blue. Safe Democratic hold.' },
+  CO: { type:'senate', state:'Colorado', incumbent:'John Hickenlooper (D)', party:'D', rating:'lean-d', winD:60, winR:40, candidates:[{party:'D',name:'John Hickenlooper',status:'Incumbent'},{party:'R',name:'TBD',status:'Challenger'}], polls:[], notes:'Lean Democratic but Trump+suburban anxiety creates vulnerability. Denver suburbs are key.' },
+  CT: { type:'senate', state:'Connecticut', incumbent:'Chris Murphy (D)', party:'D', rating:'safe-d', winD:88, winR:12, candidates:[{party:'D',name:'Chris Murphy',status:'Incumbent'},{party:'R',name:'TBD',status:''}], polls:[], notes:'Solidly blue New England state.' },
+  FL: { type:'senate', state:'Florida', incumbent:'Open (Rubio to SecState)', party:'R', rating:'lean-r', winD:38, winR:62, candidates:[{party:'R',name:'TBD (R Primary)',status:'Open seat'},{party:'D',name:'TBD',status:'Challenger'}], polls:[], notes:'Special election possible if appointed. Florida trending R. Key race to watch for candidate quality.' },
+  GA: { type:'senate', state:'Georgia', incumbent:'Jon Ossoff (D)', party:'D', rating:'toss', winD:52, winR:48, candidates:[{party:'D',name:'Jon Ossoff',status:'Incumbent'},{party:'R',name:'TBD',status:'Challenger'}], polls:[{src:'Emerson Feb',d:49,r:47,date:'Feb 18'},{src:'AtlantaJC poll',d:48,r:46,date:'Jan 30'}], notes:'Toss-up. Ossoff is well-funded. Georgia\'s shifting demographics vs. Trump turnout machine. Highest national attention.' },
+  HI: { type:'senate', state:'Hawaii', incumbent:'Mazie Hirono (D)', party:'D', rating:'safe-d', winD:92, winR:8, candidates:[{party:'D',name:'Mazie Hirono',status:'Incumbent'},{party:'R',name:'TBD',status:''}], polls:[], notes:'Solidly blue.' },
+  ID: { type:'senate', state:'Idaho', incumbent:'Jim Risch (R)', party:'R', rating:'safe-r', winD:8, winR:92, candidates:[{party:'R',name:'Jim Risch',status:'Incumbent'},{party:'D',name:'TBD',status:''}], polls:[], notes:'Deep red state.' },
+  IL: { type:'senate', state:'Illinois', incumbent:'Dick Durbin (D) retiring', party:'D', rating:'safe-d', winD:86, winR:14, candidates:[{party:'D',name:'TBD (Open)',status:'Open seat'},{party:'R',name:'TBD',status:''}], polls:[], notes:'Durbin retiring. Blue state, D favored in open seat race.' },
+  IN: { type:'senate', state:'Indiana', incumbent:'Open (Young R retiring)', party:'R', rating:'likely-r', winD:18, winR:82, candidates:[{party:'R',name:'TBD (Open)',status:'Open seat'},{party:'D',name:'TBD',status:''}], polls:[], notes:'Todd Young retiring. Red state but open seat creates some uncertainty. Likely R hold.' },
+  IA: { type:'senate', state:'Iowa', incumbent:'Joni Ernst (R)', party:'R', rating:'lean-r', winD:35, winR:65, candidates:[{party:'R',name:'Joni Ernst',status:'Incumbent'},{party:'D',name:'TBD',status:'Challenger'}], polls:[], notes:'Iowa shifted red but Ernst not universally popular. Economic anxiety could open door.' },
+  KS: { type:'senate', state:'Kansas', incumbent:'Jerry Moran (R)', party:'R', rating:'safe-r', winD:10, winR:90, candidates:[{party:'R',name:'Jerry Moran',status:'Incumbent'},{party:'D',name:'TBD',status:''}], polls:[], notes:'Safe Republican.' },
+  KY: { type:'senate', state:'Kentucky', incumbent:'Mitch McConnell (R) retiring', party:'R', rating:'safe-r', winD:8, winR:92, candidates:[{party:'R',name:'TBD (Open)',status:'Open seat'},{party:'D',name:'TBD',status:''}], polls:[], notes:'McConnell not running. Deep red state, safe R.' },
+  LA: { type:'senate', state:'Louisiana', incumbent:'Bill Cassidy (R)', party:'R', rating:'safe-r', winD:10, winR:90, candidates:[{party:'R',name:'Bill Cassidy',status:'Incumbent'},{party:'D',name:'TBD',status:''}], polls:[], notes:'Safe red. Cassidy voted to convict Trump in impeachment but survived primary.' },
+  ME: { type:'senate', state:'Maine', incumbent:'Susan Collins (R)', party:'R', rating:'toss', winD:45, winR:55, candidates:[{party:'R',name:'Susan Collins',status:'Incumbent'},{party:'D',name:'TBD',status:'Challenger'}], polls:[{src:'Critical Insights',d:44,r:47,date:'Jan 2026'}], notes:'Collins always overperforms R baseline but Harris+6.9 state. Could be decisive in majority math. Most watched.' },
+  MD: { type:'senate', state:'Maryland', incumbent:'Angela Alsobrooks (D)', party:'D', rating:'safe-d', winD:90, winR:10, candidates:[{party:'D',name:'Angela Alsobrooks',status:'Incumbent'},{party:'R',name:'TBD',status:''}], polls:[], notes:'Solidly blue. Open seat filled in 2024.' },
+  MA: { type:'senate', state:'Massachusetts', incumbent:'Ed Markey (D)', party:'D', rating:'safe-d', winD:88, winR:12, candidates:[{party:'D',name:'Ed Markey',status:'Incumbent'},{party:'R',name:'TBD',status:''}], polls:[], notes:'Safe blue.' },
+  MI: { type:'senate', state:'Michigan', incumbent:'Gary Peters (D) retiring', party:'D', rating:'toss', winD:50, winR:50, candidates:[{party:'D',name:'TBD (Open)',status:'Open seat'},{party:'R',name:'TBD',status:'Challenger'}], polls:[{src:'EPIC-MRA Feb',d:47,r:46,date:'Feb 12'}], notes:'Peters retiring makes this a true toss-up. Candidate recruitment battle ongoing. Trump+1 state in 2024.' },
+  MN: { type:'senate', state:'Minnesota', incumbent:'Tina Smith (D)', party:'D', rating:'lean-d', winD:58, winR:42, candidates:[{party:'D',name:'Tina Smith',status:'Incumbent'},{party:'R',name:'TBD',status:'Challenger'}], polls:[], notes:'Smith is solid. Minnesota trending slight D nationally. Watch suburban Twin Cities.' },
+  MS: { type:'senate', state:'Mississippi', incumbent:'Roger Wicker (R)', party:'R', rating:'safe-r', winD:8, winR:92, candidates:[{party:'R',name:'Roger Wicker',status:'Incumbent'},{party:'D',name:'TBD',status:''}], polls:[], notes:'Deep red.' },
+  MO: { type:'senate', state:'Missouri', incumbent:'Josh Hawley (R)', party:'R', rating:'safe-r', winD:12, winR:88, candidates:[{party:'R',name:'Josh Hawley',status:'Incumbent'},{party:'D',name:'TBD',status:''}], polls:[], notes:'Safe red. Hawley high profile but unchallenged in a red state.' },
+  MT: { type:'senate', state:'Montana', incumbent:'Tim Sheehy (R)', party:'R', rating:'lean-r', winD:38, winR:62, candidates:[{party:'R',name:'Tim Sheehy',status:'Incumbent (won 2024)'},{party:'D',name:'TBD',status:'Challenger'}], polls:[], notes:'Sheehy won in 2024. Trump+20 state. D would need exceptional candidate and economic tailwinds to compete.' },
+  NE: { type:'senate', state:'Nebraska', incumbent:'Deb Fischer (R)', party:'R', rating:'lean-r', winD:30, winR:70, candidates:[{party:'R',name:'Deb Fischer',status:'Incumbent'},{party:'D',name:'TBD',status:'Challenger'}], polls:[], notes:'Fischer has won twice but Nebraska is quietly less dominant for R. Watch NE-02 House race separately.' },
+  NV: { type:'senate', state:'Nevada', incumbent:'Jacky Rosen (D)', party:'D', rating:'lean-r', winD:44, winR:56, candidates:[{party:'D',name:'Jacky Rosen',status:'Incumbent'},{party:'R',name:'Sam Brown',status:'Challenger'}], polls:[{src:'OH Predictive',d:45,r:48,date:'Feb 2026'}], notes:'Brown is well-funded. Nevada\'s Hispanic swing post-Venezuela action could shift dynamics. Critical battleground.' },
+  NH: { type:'senate', state:'New Hampshire', incumbent:'Jeanne Shaheen (D) retiring', party:'D', rating:'lean-d', winD:60, winR:40, candidates:[{party:'D',name:'TBD (Open)',status:'Open seat'},{party:'R',name:'TBD',status:'Challenger'}], polls:[], notes:'Shaheen retiring opens seat. NH is competitive but leans D in federal races. Candidate TBD.' },
+  NJ: { type:'senate', state:'New Jersey', incumbent:'Andy Kim (D)', party:'D', rating:'lean-d', winD:62, winR:38, candidates:[{party:'D',name:'Andy Kim',status:'Incumbent'},{party:'R',name:'TBD',status:'Challenger'}], polls:[], notes:'Kim won 2024 convincingly. NJ is blue-leaning federal state.' },
+  NM: { type:'senate', state:'New Mexico', incumbent:'Martin Heinrich (D)', party:'D', rating:'safe-d', winD:82, winR:18, candidates:[{party:'D',name:'Martin Heinrich',status:'Incumbent'},{party:'R',name:'TBD',status:''}], polls:[], notes:'Safe blue.' },
+  NY: { type:'senate', state:'New York', incumbent:'Kirsten Gillibrand (D)', party:'D', rating:'safe-d', winD:88, winR:12, candidates:[{party:'D',name:'Kirsten Gillibrand',status:'Incumbent'},{party:'R',name:'TBD',status:''}], polls:[], notes:'Safe blue.' },
+  NC: { type:'senate', state:'North Carolina', incumbent:'Thom Tillis (R)', party:'R', rating:'toss', winD:47, winR:53, candidates:[{party:'R',name:'Thom Tillis',status:'Incumbent'},{party:'D',name:'Roy Cooper (considering)',status:'Challenger'}], polls:[{src:'Meredith Feb',d:46,r:48,date:'Feb 10'}], notes:'Cooper entering would make this lean D immediately given his 2x governor wins in a R+state. Key race.' },
+  ND: { type:'senate', state:'North Dakota', incumbent:'John Hoeven (R)', party:'R', rating:'safe-r', winD:5, winR:95, candidates:[{party:'R',name:'John Hoeven',status:'Incumbent'},{party:'D',name:'TBD',status:''}], polls:[], notes:'Deep red.' },
+  OH: { type:'senate', state:'Ohio', incumbent:'Jon Husted (R, appointed)', party:'R', rating:'lean-r', winD:36, winR:64, candidates:[{party:'R',name:'Jon Husted',status:'Appointed'},{party:'D',name:'Sherrod Brown (considering)',status:'Challenger'}], polls:[], notes:'Special election. Brown running again would tighten dramatically — he won 3x in this state. Watch candidate announcement.' },
+  OK: { type:'senate', state:'Oklahoma', incumbent:'Markwayne Mullin (R)', party:'R', rating:'safe-r', winD:6, winR:94, candidates:[{party:'R',name:'Markwayne Mullin',status:'Incumbent'},{party:'D',name:'TBD',status:''}], polls:[], notes:'Deep red.' },
+  OR: { type:'senate', state:'Oregon', incumbent:'Jeff Merkley (D)', party:'D', rating:'lean-d', winD:64, winR:36, candidates:[{party:'D',name:'Jeff Merkley',status:'Incumbent'},{party:'R',name:'TBD',status:'Challenger'}], polls:[], notes:'Blue-leaning but Oregon has shifted somewhat. Merkley is well-regarded.' },
+  PA: { type:'senate', state:'Pennsylvania', incumbent:'Open (Casey D lost 2024)', party:'R', rating:'lean-d', winD:55, winR:45, candidates:[{party:'D',name:'TBD',status:'Open seat'},{party:'R',name:'Dave McCormick',status:'Potential run?'}], polls:[], notes:'Casey lost to McCormick in 2024. Now McCormick potentially running for something else. D opportunity in open race.' },
+  RI: { type:'senate', state:'Rhode Island', incumbent:'Sheldon Whitehouse (D)', party:'D', rating:'safe-d', winD:86, winR:14, candidates:[{party:'D',name:'Sheldon Whitehouse',status:'Incumbent'},{party:'R',name:'TBD',status:''}], polls:[], notes:'Safe blue.' },
+  SC: { type:'senate', state:'South Carolina', incumbent:'Lindsey Graham (R)', party:'R', rating:'safe-r', winD:12, winR:88, candidates:[{party:'R',name:'Lindsey Graham',status:'Incumbent'},{party:'D',name:'TBD',status:''}], polls:[], notes:'Safe red.' },
+  SD: { type:'senate', state:'South Dakota', incumbent:'Mike Rounds (R)', party:'R', rating:'safe-r', winD:8, winR:92, candidates:[{party:'R',name:'Mike Rounds',status:'Incumbent'},{party:'D',name:'TBD',status:''}], polls:[], notes:'Deep red.' },
+  TN: { type:'senate', state:'Tennessee', incumbent:'Marsha Blackburn (R)', party:'R', rating:'safe-r', winD:10, winR:90, candidates:[{party:'R',name:'Marsha Blackburn',status:'Incumbent'},{party:'D',name:'TBD',status:''}], polls:[], notes:'Safe red.' },
+  TX: { type:'senate', state:'Texas', incumbent:'John Cornyn (R)', party:'R', rating:'likely-r', winD:28, winR:72, candidates:[{party:'R',name:'John Cornyn',status:'Incumbent'},{party:'D',name:'TBD',status:'Challenger'}], polls:[], notes:'Texas still leans R but trending competitive. Cornyn has a tough GOP primary challenge possible.' },
+  UT: { type:'senate', state:'Utah', incumbent:'Mike Lee (R)', party:'R', rating:'safe-r', winD:12, winR:88, candidates:[{party:'R',name:'Mike Lee',status:'Incumbent'},{party:'D',name:'TBD',status:''}], polls:[], notes:'Safe red.' },
+  VT: { type:'senate', state:'Vermont', incumbent:'Peter Welch (D)', party:'D', rating:'safe-d', winD:86, winR:14, candidates:[{party:'D',name:'Peter Welch',status:'Incumbent'},{party:'R',name:'TBD',status:''}], polls:[], notes:'Safe blue.' },
+  VA: { type:'senate', state:'Virginia', incumbent:'Mark Warner (D)', party:'D', rating:'lean-d', winD:62, winR:38, candidates:[{party:'D',name:'Mark Warner',status:'Incumbent'},{party:'R',name:'TBD',status:'Challenger'}], polls:[], notes:'Virginia has trended blue. Warner is experienced. Northern Virginia suburbs decisive.' },
+  WA: { type:'senate', state:'Washington', incumbent:'Maria Cantwell (D)', party:'D', rating:'safe-d', winD:82, winR:18, candidates:[{party:'D',name:'Maria Cantwell',status:'Incumbent'},{party:'R',name:'TBD',status:''}], polls:[], notes:'Safe blue.' },
+  WV: { type:'senate', state:'West Virginia', incumbent:'Jim Justice (R)', party:'R', rating:'safe-r', winD:5, winR:95, candidates:[{party:'R',name:'Jim Justice',status:'Incumbent'},{party:'D',name:'TBD',status:''}], polls:[], notes:'Deep red. Manchin gone.' },
+  WI: { type:'senate', state:'Wisconsin', incumbent:'Tammy Baldwin (D)', party:'D', rating:'toss', winD:52, winR:48, candidates:[{party:'D',name:'Tammy Baldwin',status:'Incumbent'},{party:'R',name:'TBD',status:'Challenger'}], polls:[{src:'Marquette Feb',d:48,r:47,date:'Feb 15'},{src:'Emerson Jan',d:47,r:46,date:'Jan 28'}], notes:'Baldwin won by 1pt in 2022. Toss-up. Wisconsin is the ultimate swing state. Economy will decide.' },
+  WY: { type:'senate', state:'Wyoming', incumbent:'John Barrasso (R)', party:'R', rating:'safe-r', winD:4, winR:96, candidates:[{party:'R',name:'John Barrasso',status:'Incumbent'},{party:'D',name:'TBD',status:''}], polls:[], notes:'Deep red.' },
+
+  // ---- KEY HOUSE RACES ----
+  'NY-17': { type:'house', state:'New York', district:'NY-17', incumbent:'Mike Lawler (R)', party:'R', rating:'toss', winD:52, winR:48, candidates:[{party:'R',name:'Mike Lawler',status:'Incumbent (possible Senate run)'},{party:'D',name:'TBD',status:'Challenger'}], polls:[{src:'Siena Feb',d:47,r:46,date:'Feb 18'},{src:'NRCC internal',d:46,r:47,date:'Jan 10'}], notes:'Harris+2 district. Cook moved Lean R → Toss-Up Jan 15. If Lawler runs for Senate, becomes Lean D open seat.' },
+  'CO-08': { type:'house', state:'Colorado', district:'CO-08', incumbent:'Gabe Evans (R)', party:'R', rating:'toss', winD:53, winR:47, candidates:[{party:'R',name:'Gabe Evans',status:'Incumbent'},{party:'D',name:'TBD',status:'Challenger'}], polls:[], notes:'Evans won Biden+6 district by 1pt in 2024. DCCC top target. D environment favors flip.' },
+  'NJ-07': { type:'house', state:'New Jersey', district:'NJ-07', incumbent:'Tom Kean Jr. (R)', party:'R', rating:'toss', winD:53, winR:47, candidates:[{party:'R',name:'Tom Kean Jr.',status:'Incumbent'},{party:'D',name:'TBD',status:'Challenger'}], polls:[{src:'Monmouth Jan',d:45,r:44,date:'Jan 28'}], notes:'Kean won narrowly in 2022 and 2024. Biden+1 district. Consistently competitive.' },
+  'NE-02': { type:'house', state:'Nebraska', district:'NE-02', incumbent:'Open (Bacon R retired)', party:'R', rating:'lean-d', winD:62, winR:38, candidates:[{party:'D',name:'TBD',status:'Open seat'},{party:'R',name:'TBD',status:''}], polls:[], notes:'Bacon retired. Cook rates Lean D. Biden+2 district, now open. D opportunity.' },
+  'PA-07': { type:'house', state:'Pennsylvania', district:'PA-07', incumbent:'Rob Bresnahan (R)', party:'R', rating:'lean-r', winD:44, winR:56, candidates:[{party:'R',name:'Rob Bresnahan',status:'Freshman'},{party:'D',name:'TBD',status:'Challenger'}], polls:[], notes:'Bresnahan flipped this D seat in 2024. D climate may flip back. DCCC target.' },
+  'CA-27': { type:'house', state:'California', district:'CA-27', incumbent:'George Whitesides (D)', party:'D', rating:'lean-d', winD:60, winR:40, candidates:[{party:'D',name:'George Whitesides',status:'Freshman'},{party:'R',name:'TBD',status:'Challenger'}], polls:[], notes:'NRCC target. Whitesides won tight 2024 race in Antelope Valley. Freshman vulnerability.' },
+  'IA-03': { type:'house', state:'Iowa', district:'IA-03', incumbent:'Zach Nunn (R)', party:'R', rating:'toss', winD:49, winR:51, candidates:[{party:'R',name:'Zach Nunn',status:'Incumbent'},{party:'D',name:'TBD',status:'Challenger'}], polls:[], notes:'Cook moved Lean R → Toss-Up Jan 2026. Competitive suburban Des Moines district.' },
+  'OH-09': { type:'house', state:'Ohio', district:'OH-09', incumbent:'Marcy Kaptur (D)', party:'D', rating:'toss', winD:46, winR:54, candidates:[{party:'D',name:'Marcy Kaptur',status:'Incumbent'},{party:'R',name:'TBD',status:'Challenger'}], polls:[], notes:'Trump+14 district. Kaptur is perennial survivor but district gets tougher every cycle.' },
+  'FL-13': { type:'house', state:'Florida', district:'FL-13', incumbent:'Anna Paulina Luna (R)', party:'R', rating:'lean-r', winD:38, winR:62, candidates:[{party:'R',name:'Anna Paulina Luna',status:'Incumbent'},{party:'D',name:'TBD',status:'Challenger'}], polls:[], notes:'Luna won 2024. St. Pete district. DCCC target of opportunity.' },
+};
+
+var RATING_COLORS = {
+  'safe-d':   'var(--safe-d)',
+  'lean-d':   'var(--lean-d)',
+  'likely-d': 'var(--tilt-d)',
+  'toss':     'var(--toss)',
+  'likely-r': 'var(--tilt-r)',
+  'lean-r':   'var(--lean-r)',
+  'safe-r':   'var(--safe-r)',
+};
+
+var RATING_LABELS = {
+  'safe-d':'Safe Dem','lean-d':'Lean Dem','likely-d':'Likely Dem',
+  'toss':'Toss-Up',
+  'likely-r':'Likely Rep','lean-r':'Lean Rep','safe-r':'Safe Rep',
+};
+
+var currentView = 'senate';
+var currentFilter = 'all';
+var selectedState = null;
+
+// ============================================================
+// MAP COLORING
+// ============================================================
+function colorMap() {
+  document.querySelectorAll('.state-path').forEach(function(el) {
+    var stateKey = el.getAttribute('data-state');
+    var race = getRaceForState(stateKey);
+
+    if (!race) {
+      el.style.fill = 'var(--s3)';
+      el.style.cursor = 'default';
+      el.classList.add('dimmed');
+      return;
+    }
+
+    // Filter
+    var show = true;
+    if (currentFilter === 'competitive') {
+      show = ['toss','lean-d','lean-r','likely-d','likely-r'].includes(race.rating);
+    } else if (currentFilter === 'toss') {
+      show = race.rating === 'toss';
+    }
+
+    if (!show) {
+      el.style.fill = 'var(--s2)';
+      el.classList.add('dimmed');
+    } else {
+      el.style.fill = RATING_COLORS[race.rating] || 'var(--faint)';
+      el.classList.remove('dimmed');
+    }
+    el.style.cursor = 'pointer';
+  });
+
+  updateSeatTotals();
+}
+
+function getRaceForState(stateKey) {
+  if (currentView === 'senate' || currentView === 'all') {
+    if (RACES[stateKey] && RACES[stateKey].type === 'senate') return RACES[stateKey];
+  }
+  if (currentView === 'house' || currentView === 'all') {
+    // Find house race for this state
+    var keys = Object.keys(RACES);
+    for (var i=0; i<keys.length; i++) {
+      var r = RACES[keys[i]];
+      if (r.type === 'house' && r.state && stateAbbr(r.state) === stateKey) {
+        return r;
+      }
+    }
+  }
+  return null;
+}
+
+function stateAbbr(stateName) {
+  var map = {
+    'Alabama':'AL','Alaska':'AK','Arizona':'AZ','Arkansas':'AR','California':'CA',
+    'Colorado':'CO','Connecticut':'CT','Delaware':'DE','Florida':'FL','Georgia':'GA',
+    'Hawaii':'HI','Idaho':'ID','Illinois':'IL','Indiana':'IN','Iowa':'IA',
+    'Kansas':'KS','Kentucky':'KY','Louisiana':'LA','Maine':'ME','Maryland':'MD',
+    'Massachusetts':'MA','Michigan':'MI','Minnesota':'MN','Mississippi':'MS',
+    'Missouri':'MO','Montana':'MT','Nebraska':'NE','Nevada':'NV','New Hampshire':'NH',
+    'New Jersey':'NJ','New Mexico':'NM','New York':'NY','North Carolina':'NC',
+    'North Dakota':'ND','Ohio':'OH','Oklahoma':'OK','Oregon':'OR','Pennsylvania':'PA',
+    'Rhode Island':'RI','South Carolina':'SC','South Dakota':'SD','Tennessee':'TN',
+    'Texas':'TX','Utah':'UT','Vermont':'VT','Virginia':'VA','Washington':'WA',
+    'West Virginia':'WV','Wisconsin':'WI','Wyoming':'WY',
+  };
+  return map[stateName] || '';
+}
+
+// ============================================================
+// SEAT TOTALS BAR
+// ============================================================
+function updateSeatTotals() {
+  if (currentView === 'house') {
+    document.getElementById('seat-bar-section').querySelector('.seat-bar-labels').innerHTML =
+      '<span style="color:#5b8aff;font-weight:600;">DEMOCRATS</span><span>← 218 seats = House Majority →</span><span style="color:#ff5252;font-weight:600;">REPUBLICANS</span>';
+  } else {
+    document.getElementById('seat-bar-section').querySelector('.seat-bar-labels').innerHTML =
+      '<span style="color:#5b8aff;font-weight:600;">DEMOCRATS PROJECTED</span><span>← 51 seats = Senate Majority →</span><span style="color:#ff5252;font-weight:600;">REPUBLICANS PROJECTED</span>';
+  }
+
+  var counts = { 'safe-d':0,'lean-d':0,'likely-d':0,'toss':0,'likely-r':0,'lean-r':0,'safe-r':0 };
+  var totalD=0, totalT=0, totalR=0;
+  var totalRaces = 0;
+
+  Object.keys(RACES).forEach(function(k) {
+    var r = RACES[k];
+    if (currentView === 'senate' && r.type !== 'senate') return;
+    if (currentView === 'house' && r.type !== 'house') return;
+    counts[r.rating] = (counts[r.rating]||0) + 1;
+    totalRaces++;
+    if (['safe-d','lean-d','likely-d'].includes(r.rating)) totalD++;
+    else if (r.rating === 'toss') totalT++;
+    else totalR++;
+  });
+
+  var bar = document.getElementById('seat-bar');
+  var total = totalRaces || 1;
+  bar.innerHTML =
+    '<div class="sb-safe-d" style="width:'+(counts['safe-d']/total*100)+'%"></div>' +
+    '<div class="sb-lean-d" style="width:'+(counts['lean-d']/total*100)+'%"></div>' +
+    '<div class="sb-tilt-d" style="width:'+(counts['likely-d']/total*100)+'%"></div>' +
+    '<div class="sb-toss"   style="width:'+(counts['toss']/total*100)+'%"></div>' +
+    '<div class="sb-tilt-r" style="width:'+(counts['likely-r']/total*100)+'%"></div>' +
+    '<div class="sb-lean-r" style="width:'+(counts['lean-r']/total*100)+'%"></div>' +
+    '<div class="sb-safe-r" style="width:'+(counts['safe-r']/total*100)+'%"></div>' +
+    '<div class="majority-tick" style="left:50%"></div>';
+
+  document.getElementById('total-d').textContent = 'D Lean: ' + totalD;
+  document.getElementById('total-toss').textContent = 'Toss: ' + totalT;
+  document.getElementById('total-r').textContent = 'R Lean: ' + totalR;
+}
+
+// ============================================================
+// SIDEBAR
+// ============================================================
+function openSidebar(stateKey) {
+  selectedState = stateKey;
+  var race = RACES[stateKey];
+  if (!race) return;
+
+  document.querySelectorAll('.state-path').forEach(function(p) { p.classList.remove('selected'); });
+  document.querySelector('[data-state="'+stateKey+'"]').classList.add('selected');
+
+  document.getElementById('sb-placeholder').style.display = 'none';
+  var content = document.getElementById('sb-content');
+  content.style.display = 'flex';
+
+  var ratingLabel = RATING_LABELS[race.rating] || race.rating;
+  var ratingClass = 'dr-' + race.rating.replace('-','').replace('-','');
+
+  // Header
+  document.getElementById('sb-header').innerHTML =
+    '<div class="sb-breadcrumb">' + (race.type === 'senate' ? 'U.S. SENATE' : 'U.S. HOUSE') + ' · ' + (race.district || race.state.toUpperCase()) + '</div>' +
+    '<div class="sb-title">' + (race.district || race.state) + '</div>' +
+    '<div class="sb-subtitle">' + race.incumbent + '</div>';
+
+  // Body
+  var pollsHtml = '';
+  if (race.polls && race.polls.length > 0) {
+    race.polls.forEach(function(p) {
+      var spread = p.d - p.r;
+      var spreadStr = spread > 0 ? 'D+'+spread : spread < 0 ? 'R+'+Math.abs(spread) : 'TIE';
+      var spreadColor = spread > 0 ? '#5b8aff' : spread < 0 ? '#ff5252' : 'var(--muted)';
+      pollsHtml += '<div class="poll-row">' +
+        '<div class="poll-src">' + p.src + '</div>' +
+        '<div class="poll-d">' + p.d + '</div>' +
+        '<div class="poll-r">' + p.r + '</div>' +
+        '<div class="poll-spread" style="color:'+spreadColor+'">' + spreadStr + '</div>' +
+        '<div class="poll-date">' + p.date + '</div>' +
+      '</div>';
+    });
+  } else {
+    pollsHtml = '<div style="font-family:var(--mono);font-size:9px;color:var(--faint);padding:6px 0;letter-spacing:0.08em;">NO STATE POLLING AVAILABLE</div>';
+  }
+
+  var candsHtml = '';
+  (race.candidates || []).forEach(function(c) {
+    candsHtml += '<div class="candidate-row">' +
+      '<div class="cand-party ' + (c.party === 'D' ? 'cand-d' : 'cand-r') + '">' + c.party + '</div>' +
+      '<div><div class="cand-name">' + c.name + '</div><div class="cand-status">' + c.status + '</div></div>' +
+    '</div>';
+  });
+
+  document.getElementById('sb-body').innerHTML =
+    '<div class="detail-rating dr-' + race.rating + '">' + ratingLabel + '</div>' +
+
+    '<div class="prob-display">' +
+      '<div><div class="prob-label">DEM WIN PROB</div><div class="prob-d">' + race.winD + '%</div></div>' +
+      '<div style="flex:1"></div>' +
+      '<div style="text-align:right"><div class="prob-label">REP WIN PROB</div><div class="prob-r">' + race.winR + '%</div></div>' +
+    '</div>' +
+    '<div class="prob-bar"><div class="pb-d" style="width:'+race.winD+'%"></div><div class="pb-r"></div></div>' +
+
+    '<div class="detail-section">' +
+      '<div class="ds-label">Candidates</div>' + candsHtml +
+    '</div>' +
+
+    '<div class="detail-section">' +
+      '<div class="ds-label">State Polling</div>' + pollsHtml +
+    '</div>' +
+
+    '<div class="detail-section">' +
+      '<div class="ds-label">Model Notes</div>' +
+      '<div class="context-text">' + (race.notes || '') + '</div>' +
+    '</div>' +
+
+    '<div style="margin-top:16px;padding:10px 12px;background:var(--s3);border-radius:4px;">' +
+      '<div style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:0.1em;margin-bottom:5px;">AXIOM MODEL · ' + (race.type === 'senate' ? 'SENATE' : 'HOUSE') + ' RACE</div>' +
+      '<div style="font-size:12px;color:rgba(226,234,255,0.6);line-height:1.6;">Win probabilities based on fundamentals model: polling avg (30%), presidential approval (25%), generic ballot (20%), district PVI (15%), historical patterns (10%).</div>' +
+    '</div>';
+}
+
+// ============================================================
+// TOOLTIP
+// ============================================================
+var tooltip = document.getElementById('tooltip');
+
+function showTooltip(e, stateKey) {
+  var race = getRaceForState(stateKey) || RACES[stateKey];
+  if (!race) { hideTooltip(); return; }
+  document.getElementById('tt-state').textContent = race.state || stateKey;
+  document.getElementById('tt-type').textContent = race.type === 'senate' ? 'U.S. SENATE 2026' : (race.district || '') + ' · U.S. HOUSE 2026';
+  var rl = RATING_LABELS[race.rating] || race.rating;
+  var ttRating = document.getElementById('tt-rating');
+  ttRating.textContent = rl.toUpperCase();
+  ttRating.style.color = RATING_COLORS[race.rating] || 'var(--muted)';
+  document.getElementById('tt-d').textContent = 'D: ' + race.winD + '%';
+  document.getElementById('tt-r').textContent = 'R: ' + race.winR + '%';
+  tooltip.style.display = 'block';
+  positionTooltip(e);
+}
+
+function positionTooltip(e) {
+  var x = e.clientX + 14;
+  var y = e.clientY - 10;
+  if (x + 200 > window.innerWidth) x = e.clientX - 210;
+  if (y + 140 > window.innerHeight) y = e.clientY - 140;
+  tooltip.style.left = x + 'px';
+  tooltip.style.top = y + 'px';
+}
+
+function hideTooltip() { tooltip.style.display = 'none'; }
+
+// ============================================================
+// STATE INTERACTIONS
+// ============================================================
+document.querySelectorAll('.state-path').forEach(function(el) {
+  var stateKey = el.getAttribute('data-state');
+
+  el.addEventListener('mouseenter', function(e) { showTooltip(e, stateKey); });
+  el.addEventListener('mousemove', function(e) { positionTooltip(e); });
+  el.addEventListener('mouseleave', function() { hideTooltip(); });
+  el.addEventListener('click', function() {
+    hideTooltip();
+    if (RACES[stateKey]) {
+      openSidebar(stateKey);
+    }
+  });
+});
+
+// ============================================================
+// VIEW / FILTER CONTROLS
+// ============================================================
+function setView(v) {
+  currentView = v;
+  document.querySelectorAll('.vt-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('btn-'+v).classList.add('active');
+  colorMap();
+  if (selectedState) openSidebar(selectedState);
+}
+
+function setFilter(btn, f) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-pill').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  colorMap();
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('load', function() {
+  colorMap();
+});
+</script>
+</body>
+</html>
