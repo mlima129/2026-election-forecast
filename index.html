@@ -3,1203 +3,329 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AXIOM — 2026 Midterm Election Forecast</title>
+<title>AXIOM — 2026 Election Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --d: #1d6df5; --d2: #3d8aff; --d-dim: rgba(29,109,245,0.12);
-  --r: #e52620; --r2: #ff4d49; --r-dim: rgba(229,38,32,0.12);
-  --bg: #06080d; --s1: #0c0f17; --s2: #111520; --s3: #171c2b;
-  --border: rgba(255,255,255,0.065); --border2: rgba(255,255,255,0.04);
-  --text: #dce4f0; --muted: #4e6080; --faint: #2a3650;
-  --accent: #00d4b4; --accent-dim: rgba(0,212,180,0.1);
-  --warn: #f0a329; --warn-dim: rgba(240,163,41,0.12);
-  --green: #2dd06b; --green-dim: rgba(45,208,107,0.1);
-  --toss: #e8b84b; --toss-dim: rgba(232,184,75,0.15);
-  --mono: 'JetBrains Mono', monospace;
-  --cond: 'Barlow Condensed', sans-serif;
+  --bg: #07090f; --s1: #0d1018; --s2: #111620; --s3: #181e2c;
+  --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.04);
+  --text: #e2eaff; --muted: #4a5880; --faint: #232d45;
+  --accent: #00ffb3; --accent2: #00c98a; --accent-dim: rgba(0,255,179,0.08);
+  --d: #3d6ef5; --d2: #5b8aff; --d-dim: rgba(61,110,245,0.1);
+  --r: #e03030; --r2: #ff5252; --r-dim: rgba(224,48,48,0.1);
+  --gold: #ffc744; --gold-dim: rgba(255,199,68,0.08);
+  --mono: 'DM Mono', monospace;
+  --sans: 'Syne', sans-serif;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior: smooth; }
-body { font-family: var(--cond); background: var(--bg); color: var(--text); min-height:100vh; overflow-x:hidden; }
-body::before { content:''; position:fixed; inset:0; background-image: linear-gradient(rgba(0,212,180,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,180,0.02) 1px, transparent 1px); background-size:48px 48px; pointer-events:none; z-index:0; }
-body::after { content:''; position:fixed; inset:0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px); pointer-events:none; z-index:0; }
-.wrap { max-width:1340px; margin:0 auto; padding:0 20px; position:relative; z-index:1; }
+html { scroll-behavior:smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  position: relative;
+  overflow-x: hidden;
+}
 
-/* HEADER */
-header { border-bottom:1px solid var(--border); position:sticky; top:0; background:rgba(6,8,13,0.95); backdrop-filter:blur(12px); z-index:200; }
-.header-bar { display:flex; align-items:center; justify-content:space-between; padding:10px 20px; max-width:1340px; margin:0 auto; }
-.logo-mark { font-family:var(--mono); font-size:9px; letter-spacing:0.3em; color:var(--accent); text-transform:uppercase; }
-.logo-mark span { color:var(--muted); }
-.header-title { font-size:17px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; }
-.header-meta { font-family:var(--mono); font-size:9px; color:var(--muted); text-align:right; line-height:1.7; }
-.live-chip { display:inline-flex; align-items:center; gap:5px; background:var(--accent-dim); border:1px solid rgba(0,212,180,0.3); color:var(--accent); font-family:var(--mono); font-size:9px; letter-spacing:0.12em; padding:3px 8px; border-radius:2px; }
-.live-dot { width:6px; height:6px; background:var(--accent); border-radius:50%; animation:blink 1.4s ease-in-out infinite; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+/* noise */
+body::before {
+  content:''; position:fixed; inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size:180px; pointer-events:none; z-index:0;
+}
 
-/* NAV */
-.nav-tabs { display:flex; border-top:1px solid var(--border2); background:rgba(11,14,22,0.8); overflow-x:auto; }
-.nav-tab { padding:9px 16px; font-size:11px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; transition:all 0.2s; white-space:nowrap; flex-shrink:0; }
-.nav-tab:hover { color:var(--text); }
-.nav-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
-.tab-content { display:none; }
-.tab-content.active { display:block; }
+/* grid */
+body::after {
+  content:''; position:fixed; inset:0;
+  background-image:
+    linear-gradient(rgba(0,255,179,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,179,0.018) 1px, transparent 1px);
+  background-size: 52px 52px;
+  pointer-events:none; z-index:0;
+}
 
-/* TICKER */
-.ticker-wrap { background:var(--s2); border-bottom:1px solid var(--border); overflow:hidden; }
-.ticker-inner { display:flex; animation:ticker 50s linear infinite; white-space:nowrap; }
-.ticker-item { padding:7px 40px; font-family:var(--mono); font-size:9px; letter-spacing:0.1em; color:var(--muted); flex-shrink:0; }
-.ticker-item .hi { color:var(--accent); }
-.ticker-item .dem { color:var(--d2); }
-.ticker-item .rep { color:var(--r2); }
-.ticker-item .warn { color:var(--warn); }
-.ticker-sep { color:var(--faint); padding:0 10px; }
-@keyframes ticker { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+/* glow orbs */
+.orb { position:fixed; border-radius:50%; pointer-events:none; z-index:0; filter:blur(90px); opacity:0.1; }
+.orb1 { width:600px; height:600px; background:var(--d); top:-200px; left:-150px; }
+.orb2 { width:500px; height:500px; background:var(--accent2); bottom:-100px; right:-100px; }
+
+.container {
+  position: relative; z-index: 1;
+  max-width: 860px; width: 100%;
+}
 
 /* HERO */
-.hero { padding:32px 0 24px; border-bottom:1px solid var(--border); }
-.hero-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1px; background:var(--border); border:1px solid var(--border); border-radius:6px; overflow:hidden; }
-@media(max-width:700px){ .hero-grid{ grid-template-columns:1fr; } }
-.hero-cell { background:var(--s1); padding:22px 26px; }
-.hero-cell-label { font-family:var(--mono); font-size:9px; letter-spacing:0.2em; color:var(--muted); text-transform:uppercase; margin-bottom:10px; }
-.hero-big-num { font-size:clamp(40px,6vw,68px); font-weight:900; letter-spacing:-0.03em; line-height:1; }
-.hero-big-num.dem { color:var(--d2); }
-.hero-big-num.rep { color:var(--r2); }
-.hero-big-num.teal { color:var(--accent); }
-.hero-sub { font-size:13px; color:var(--muted); margin-top:6px; font-weight:500; }
-.hero-sub strong { color:var(--text); }
+.hero { text-align: center; margin-bottom: 56px; }
 
-/* SEAT BARS */
-.seat-bar-wrap { padding:20px 0 6px; }
-.seat-bar-label-row { display:flex; justify-content:space-between; font-family:var(--mono); font-size:9px; color:var(--muted); letter-spacing:0.1em; margin-bottom:7px; }
-.seat-bar { height:20px; border-radius:3px; background:var(--s3); overflow:hidden; display:flex; position:relative; }
-.seat-bar .d-seg { background:linear-gradient(90deg,#0a2d9e,var(--d2)); transition:width 1.4s cubic-bezier(0.4,0,0.2,1); display:flex; align-items:center; justify-content:flex-end; padding-right:8px; font-family:var(--mono); font-size:10px; font-weight:600; color:white; }
-.seat-bar .r-seg { background:linear-gradient(90deg,var(--r),#8b0805); flex:1; display:flex; align-items:center; padding-left:8px; font-family:var(--mono); font-size:10px; font-weight:600; color:white; }
-.majority-line { position:absolute; left:50%; top:-2px; bottom:-2px; width:2px; background:rgba(255,255,255,0.6); z-index:2; }
-.majority-line-label { text-align:center; font-family:var(--mono); font-size:9px; color:var(--muted); letter-spacing:0.1em; margin-top:5px; }
+.eyebrow {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.3em;
+  color: var(--accent); text-transform: uppercase;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  margin-bottom: 20px;
+}
+.eyebrow::before, .eyebrow::after {
+  content:''; width: 40px; height: 1px; background: rgba(0,255,179,0.3);
+}
 
-/* VERDICT BANNER */
-.verdict-banner { margin-top:20px; padding:14px 22px; background:var(--s2); border:1px solid var(--border); border-radius:4px; display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
-.verdict-tag { font-size:11px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; padding:4px 10px; border-radius:3px; white-space:nowrap; }
-.verdict-tag.dem { background:var(--d-dim); color:var(--d2); border:1px solid rgba(29,109,245,0.35); }
-.verdict-tag.rep { background:var(--r-dim); color:var(--r2); border:1px solid rgba(229,38,32,0.35); }
-.verdict-tag.split { background:var(--warn-dim); color:var(--warn); border:1px solid rgba(240,163,41,0.35); }
-.verdict-text { font-size:14px; font-weight:500; color:rgba(220,228,240,0.75); flex:1; min-width:200px; line-height:1.6; }
-.verdict-text strong { color:var(--text); }
+.logo {
+  font-size: clamp(52px, 10vw, 88px);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--accent) 0%, #4d9fff 50%, var(--accent2) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 16px;
+}
 
-/* SECTIONS */
-.section { padding:28px 0; border-top:1px solid var(--border); }
-.section-header { display:flex; align-items:center; gap:12px; margin-bottom:20px; flex-wrap:wrap; }
-.section-num { font-family:var(--mono); font-size:9px; color:var(--muted); border:1px solid var(--faint); width:22px; height:22px; display:flex; align-items:center; justify-content:center; border-radius:3px; flex-shrink:0; }
-.section-title { font-size:20px; font-weight:800; letter-spacing:0.05em; text-transform:uppercase; }
-.section-badge { font-family:var(--mono); font-size:9px; letter-spacing:0.15em; padding:3px 8px; border-radius:2px; }
-.badge-accent { background:var(--accent-dim); color:var(--accent); border:1px solid rgba(0,212,180,0.25); }
-.badge-warn { background:var(--warn-dim); color:var(--warn); border:1px solid rgba(240,163,41,0.25); }
-.badge-dem { background:var(--d-dim); color:var(--d2); border:1px solid rgba(29,109,245,0.25); }
-.badge-rep { background:var(--r-dim); color:var(--r2); border:1px solid rgba(229,38,32,0.25); }
-.weight-tag { font-family:var(--mono); font-size:9px; color:var(--warn); margin-left:auto; letter-spacing:0.1em; }
+.tagline {
+  font-size: 16px; font-weight: 600; letter-spacing: 0.06em;
+  color: var(--muted); margin-bottom: 28px;
+}
 
-/* ANALYSIS BLOCK */
-.analysis-block { background:var(--s2); border:1px solid var(--border); border-radius:5px; padding:18px 22px; font-size:13px; line-height:1.75; color:rgba(220,228,240,0.75); }
-.analysis-block strong { color:var(--text); }
-.analysis-block .d { color:var(--d2); font-weight:600; }
-.analysis-block .r { color:var(--r2); font-weight:600; }
-.analysis-block .a { color:var(--accent); font-weight:600; }
+.hero-stats {
+  display: flex; gap: 24px; justify-content: center; flex-wrap: wrap;
+}
+.hs {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em;
+  color: var(--faint); text-transform: uppercase;
+  display: flex; align-items: center; gap: 6px;
+}
+.hs-val { color: var(--text); font-weight: 500; }
+.hs-d { color: var(--d2); }
+.hs-r { color: var(--r2); }
+.hs-a { color: var(--accent); }
+.dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-/* UTILITY */
-.card { background:var(--s1); border:1px solid var(--border); border-radius:5px; padding:18px; }
-.spacer { height:12px; }
-.two-col { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-@media(max-width:600px){ .two-col{ grid-template-columns:1fr; } }
-.fade { opacity:0; transform:translateY(8px); animation:fadeUp 0.4s ease forwards; }
-@keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
-.d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}.d4{animation-delay:.2s}.d5{animation-delay:.25s}
+/* TOOL CARDS */
+.tools {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 32px;
+}
+@media(max-width: 640px) { .tools { grid-template-columns: 1fr; } }
 
-/* ===================== BIAS ADJUSTER ===================== */
-.bias-panel { background:var(--s1); border:1px solid rgba(0,212,180,0.25); border-radius:6px; padding:18px 22px; margin-bottom:20px; }
-.bias-title { font-family:var(--mono); font-size:9px; letter-spacing:0.2em; color:var(--accent); text-transform:uppercase; margin-bottom:14px; display:flex; align-items:center; gap:10px; }
-.bias-title::after { content:''; flex:1; height:1px; background:rgba(0,212,180,0.15); }
-.bias-controls { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:14px; }
-.bias-ctrl { display:flex; flex-direction:column; gap:6px; }
-.bias-ctrl label { font-family:var(--mono); font-size:8px; letter-spacing:0.12em; color:var(--muted); text-transform:uppercase; display:flex; justify-content:space-between; }
-.bias-ctrl label span { color:var(--warn); font-weight:600; }
-.bias-slider { width:100%; -webkit-appearance:none; height:4px; background:var(--s3); border-radius:2px; outline:none; }
-.bias-slider::-webkit-slider-thumb { -webkit-appearance:none; width:14px; height:14px; background:var(--accent); border-radius:50%; cursor:pointer; border:2px solid var(--bg); }
-.bias-slider::-moz-range-thumb { width:14px; height:14px; background:var(--accent); border-radius:50%; cursor:pointer; border:2px solid var(--bg); }
-.bias-legend { display:flex; gap:20px; font-family:var(--mono); font-size:8px; color:var(--muted); margin-top:12px; flex-wrap:wrap; }
-.bias-legend span { display:flex; align-items:center; gap:5px; }
-.bl-dot { width:8px; height:8px; border-radius:50%; }
+.tool-card {
+  display: block;
+  text-decoration: none;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.tool-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  transition: opacity 0.2s;
+}
+.card-forecast::before { background: linear-gradient(90deg, var(--d), var(--d2)); }
+.card-live::before    { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+.card-map::before     { background: linear-gradient(90deg, var(--gold), #ff9f44); }
 
-/* ===================== RACE EXPLORER ===================== */
-.race-explorer { position:relative; }
-.state-filter-bar { display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; align-items:center; }
-.filter-label { font-family:var(--mono); font-size:9px; color:var(--muted); letter-spacing:0.12em; text-transform:uppercase; }
-.filter-btn { font-family:var(--mono); font-size:9px; letter-spacing:0.1em; padding:5px 12px; border:1px solid var(--border); border-radius:3px; background:var(--s2); color:var(--muted); cursor:pointer; transition:all 0.15s; text-transform:uppercase; }
-.filter-btn:hover { border-color:var(--accent); color:var(--accent); }
-.filter-btn.active { background:var(--accent-dim); border-color:var(--accent); color:var(--accent); }
-.filter-btn.f-toss.active { background:var(--toss-dim); border-color:var(--toss); color:var(--toss); }
-.filter-btn.f-leand.active { background:var(--d-dim); border-color:var(--d2); color:var(--d2); }
-.filter-btn.f-leanr.active { background:var(--r-dim); border-color:var(--r2); color:var(--r2); }
+.tool-card:hover {
+  border-color: rgba(255,255,255,0.14);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+.card-forecast:hover { border-color: rgba(61,110,245,0.35); box-shadow: 0 12px 40px rgba(37,99,255,0.12); }
+.card-live:hover     { border-color: rgba(0,255,179,0.3);   box-shadow: 0 12px 40px rgba(0,255,179,0.08); }
+.card-map:hover      { border-color: rgba(255,199,68,0.3);  box-shadow: 0 12px 40px rgba(255,199,68,0.08); }
 
-/* STATE ACCORDION */
-.state-group { border:1px solid var(--border); border-radius:5px; overflow:hidden; margin-bottom:8px; }
-.state-header { display:flex; align-items:center; gap:14px; padding:13px 16px; background:var(--s1); cursor:pointer; transition:background 0.15s; user-select:none; }
-.state-header:hover { background:var(--s2); }
-.state-abbr { font-size:16px; font-weight:800; letter-spacing:0.08em; width:32px; flex-shrink:0; }
-.state-name { font-size:13px; font-weight:600; letter-spacing:0.04em; flex:1; }
-.state-race-count { font-family:var(--mono); font-size:8px; color:var(--muted); letter-spacing:0.1em; }
-.state-badges { display:flex; gap:5px; flex-wrap:wrap; }
-.rating-pill { font-family:var(--mono); font-size:8px; letter-spacing:0.08em; padding:2px 7px; border-radius:10px; white-space:nowrap; }
-.rp-safe-d { background:rgba(29,109,245,0.2); color:var(--d2); }
-.rp-likely-d { background:rgba(29,109,245,0.14); color:#6ba3ff; }
-.rp-lean-d { background:rgba(29,109,245,0.09); color:#8ab8ff; }
-.rp-toss { background:var(--toss-dim); color:var(--toss); }
-.rp-lean-r { background:rgba(229,38,32,0.09); color:#ffaa8a; }
-.rp-likely-r { background:rgba(229,38,32,0.14); color:#ff7b77; }
-.rp-safe-r { background:rgba(229,38,32,0.2); color:var(--r2); }
-.expand-arrow { font-size:11px; color:var(--muted); transition:transform 0.2s; flex-shrink:0; }
-.state-group.open .expand-arrow { transform:rotate(180deg); }
-.state-body { display:none; padding:0 0 4px; background:var(--bg); }
-.state-group.open .state-body { display:block; }
+.card-icon {
+  font-size: 28px; margin-bottom: 14px; display: block;
+  filter: drop-shadow(0 0 12px currentColor);
+}
+.card-num {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em;
+  color: var(--faint); text-transform: uppercase; margin-bottom: 8px;
+}
+.card-title {
+  font-size: 18px; font-weight: 800; letter-spacing: 0.04em;
+  margin-bottom: 8px; line-height: 1.2;
+}
+.card-forecast .card-title { color: var(--d2); }
+.card-live .card-title     { color: var(--accent); }
+.card-map .card-title      { color: var(--gold); }
 
-/* RACE CARDS */
-.race-card { margin:4px 8px; background:var(--s1); border:1px solid var(--border2); border-radius:4px; padding:14px 16px; position:relative; overflow:hidden; }
-.race-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; }
-.rc-safe-d::before { background:var(--d); }
-.rc-likely-d::before { background:#4d7aff; }
-.rc-lean-d::before { background:#7099ff; }
-.rc-toss::before { background:var(--toss); }
-.rc-lean-r::before { background:#ff8f8d; }
-.rc-likely-r::before { background:#ff6360; }
-.rc-safe-r::before { background:var(--r); }
+.card-desc {
+  font-size: 12px; color: var(--muted); line-height: 1.65;
+  letter-spacing: 0.02em; margin-bottom: 16px;
+}
 
-.race-top { display:flex; align-items:flex-start; gap:12px; margin-bottom:10px; }
-.race-office { font-family:var(--mono); font-size:8px; letter-spacing:0.15em; color:var(--muted); text-transform:uppercase; margin-bottom:3px; }
-.race-title { font-size:15px; font-weight:800; letter-spacing:0.04em; }
-.race-incumbent { font-size:11px; color:var(--muted); margin-top:2px; }
-.race-rating-block { text-align:right; flex-shrink:0; }
-.race-rating-label { font-family:var(--mono); font-size:8px; letter-spacing:0.1em; color:var(--muted); text-transform:uppercase; margin-bottom:3px; }
-.race-rating-val { font-size:12px; font-weight:700; letter-spacing:0.05em; }
-.rv-safe-d { color:var(--d2); }
-.rv-likely-d { color:#6ba3ff; }
-.rv-lean-d { color:#8ab8ff; }
-.rv-toss { color:var(--toss); }
-.rv-lean-r { color:#ffaa8a; }
-.rv-likely-r { color:#ff7b77; }
-.rv-safe-r { color:var(--r2); }
+.card-features {
+  display: flex; flex-direction: column; gap: 5px; margin-bottom: 18px;
+}
+.cf {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.06em;
+  color: var(--faint); display: flex; align-items: center; gap: 6px;
+}
+.cf::before { content: '→'; color: var(--accent); font-size: 9px; }
 
-/* WIN PROBABILITY BAR */
-.win-prob-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
-.win-prob-label { font-family:var(--mono); font-size:8px; color:var(--muted); letter-spacing:0.1em; width:80px; flex-shrink:0; text-transform:uppercase; }
-.win-prob-bar { flex:1; height:10px; background:var(--s3); border-radius:5px; overflow:hidden; display:flex; }
-.wpb-d { background:linear-gradient(90deg,#0a2d9e,var(--d2)); border-radius:5px 0 0 5px; transition:width 0.6s ease; }
-.wpb-r { background:linear-gradient(90deg,var(--r),#8b0805); flex:1; border-radius:0 5px 5px 0; }
-.win-prob-nums { font-family:var(--mono); font-size:10px; font-weight:600; width:90px; flex-shrink:0; text-align:right; }
-.wpn-d { color:var(--d2); }
-.wpn-r { color:var(--r2); }
-.wpn-toss { color:var(--toss); }
+.card-cta {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+  font-weight: 600; text-transform: uppercase; padding: 8px 16px;
+  border-radius: 4px; transition: all 0.15s;
+}
+.card-forecast .card-cta { background: var(--d-dim); color: var(--d2); border: 1px solid rgba(61,110,245,0.25); }
+.card-live .card-cta     { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(0,255,179,0.2); }
+.card-map .card-cta      { background: var(--gold-dim); color: var(--gold); border: 1px solid rgba(255,199,68,0.2); }
 
-/* POLL DATA IN RACE CARD */
-.race-polls { border-top:1px solid var(--border2); padding-top:10px; margin-top:8px; }
-.poll-header { font-family:var(--mono); font-size:8px; letter-spacing:0.12em; color:var(--muted); text-transform:uppercase; margin-bottom:7px; display:flex; justify-content:space-between; }
-.poll-row { display:flex; align-items:center; gap:8px; padding:5px 0; border-bottom:1px solid var(--border2); }
-.poll-row:last-child { border-bottom:none; }
-.poll-source-name { font-size:10px; color:var(--muted); flex:1; min-width:80px; }
-.poll-d-num { font-family:var(--mono); font-size:11px; font-weight:700; color:var(--d2); width:36px; text-align:right; }
-.poll-r-num { font-family:var(--mono); font-size:11px; font-weight:700; color:var(--r2); width:36px; }
-.poll-bar-mini { flex:2; height:5px; background:var(--s3); border-radius:3px; overflow:hidden; display:flex; min-width:60px; }
-.pbm-d { background:var(--d); border-radius:3px 0 0 3px; }
-.pbm-r { background:var(--r); flex:1; }
-.poll-adj { font-family:var(--mono); font-size:8px; padding:1px 5px; border-radius:2px; flex-shrink:0; }
-.adj-d { background:var(--d-dim); color:var(--d2); }
-.adj-r { background:var(--r-dim); color:var(--r2); }
-.adj-none { background:transparent; color:var(--muted); }
-.poll-date { font-family:var(--mono); font-size:8px; color:var(--faint); width:50px; text-align:right; flex-shrink:0; }
+.tool-card:hover .card-cta { opacity: 0.85; }
 
-/* BIAS ADJUSTMENT INDICATOR */
-.bias-adj-note { font-family:var(--mono); font-size:8px; color:var(--warn); background:var(--warn-dim); border-radius:2px; padding:3px 8px; display:inline-flex; align-items:center; gap:4px; margin-top:6px; }
-.no-polls-msg { font-family:var(--mono); font-size:9px; color:var(--faint); letter-spacing:0.1em; padding:6px 0; }
+/* LIVE BADGE */
+.live-badge {
+  position: absolute; top: 14px; right: 14px;
+  display: flex; align-items: center; gap: 5px;
+  font-family: var(--mono); font-size: 8px; letter-spacing: 0.1em;
+  background: var(--accent-dim); color: var(--accent);
+  border: 1px solid rgba(0,255,179,0.2); border-radius: 2px;
+  padding: 3px 7px;
+}
 
-/* RACE SUMMARY BAR */
-.race-summary-bar { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:20px; }
-@media(max-width:600px){ .race-summary-bar{ grid-template-columns:repeat(4,1fr); } }
-.rsb-cell { background:var(--s1); border:1px solid var(--border); border-radius:4px; padding:10px 8px; text-align:center; }
-.rsb-num { font-size:22px; font-weight:900; letter-spacing:-0.03em; }
-.rsb-label { font-family:var(--mono); font-size:7px; letter-spacing:0.1em; color:var(--muted); margin-top:3px; text-transform:uppercase; }
-
-/* TABS WITHIN RACES */
-.race-type-tabs { display:flex; gap:0; border:1px solid var(--border); border-radius:5px; overflow:hidden; margin-bottom:16px; }
-.rtt { padding:9px 18px; font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; cursor:pointer; background:var(--s1); color:var(--muted); transition:all 0.15s; border-right:1px solid var(--border); flex:1; text-align:center; }
-.rtt:last-child { border-right:none; }
-.rtt:hover { color:var(--text); }
-.rtt.active { background:var(--accent-dim); color:var(--accent); }
-.rtt-content { display:none; }
-.rtt-content.active { display:block; }
-
-/* INCUMBENT BADGES */
-.inc-badge { display:inline-block; font-family:var(--mono); font-size:7px; letter-spacing:0.08em; padding:1px 5px; border-radius:2px; margin-left:5px; }
-.ib-d { background:var(--d-dim); color:var(--d2); }
-.ib-r { background:var(--r-dim); color:var(--r2); }
-.ib-open { background:rgba(255,255,255,0.06); color:var(--muted); }
-
-/* PROB CARDS (OVERVIEW) */
-.prob-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:24px 0; }
-@media(max-width:700px){ .prob-cards{ grid-template-columns:1fr; } }
-.prob-card { background:var(--s1); border:1px solid var(--border); border-radius:5px; padding:18px; }
-.prob-card-header { font-family:var(--mono); font-size:9px; letter-spacing:0.18em; color:var(--muted); text-transform:uppercase; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; }
-.prob-ring-wrap { position:relative; width:100px; height:100px; margin:0 auto 12px; }
-.prob-ring-wrap svg { transform:rotate(-90deg); }
-.prob-center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-.prob-pct { font-size:26px; font-weight:900; letter-spacing:-0.03em; line-height:1; }
-.prob-party { font-family:var(--mono); font-size:8px; letter-spacing:0.12em; color:var(--muted); margin-top:2px; }
-.prob-desc { font-size:12px; color:var(--muted); text-align:center; letter-spacing:0.04em; }
-
-/* ECON GRID */
-.econ-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; margin-bottom:18px; }
-.econ-card { background:var(--s1); border:1px solid var(--border); border-radius:5px; padding:16px; position:relative; overflow:hidden; }
-.econ-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
-.econ-card.neg::before { background:var(--r); }
-.econ-card.mixed::before { background:var(--warn); }
-.econ-card.pos::before { background:var(--green); }
-.econ-icon { font-size:18px; margin-bottom:8px; display:block; }
-.econ-name { font-family:var(--mono); font-size:8px; letter-spacing:0.15em; color:var(--muted); margin-bottom:5px; text-transform:uppercase; }
-.econ-val { font-size:28px; font-weight:900; letter-spacing:-0.03em; line-height:1; }
-.econ-val.neg { color:var(--r2); }
-.econ-val.mixed { color:var(--warn); }
-.econ-val.pos { color:var(--green); }
-.econ-sub { font-family:var(--mono); font-size:8px; color:var(--muted); margin-top:5px; line-height:1.5; }
-.econ-signal { position:absolute; top:8px; right:8px; font-family:var(--mono); font-size:8px; padding:2px 6px; border-radius:2px; }
-.signal-neg { background:var(--r-dim); color:var(--r2); }
-.signal-mixed { background:var(--warn-dim); color:var(--warn); }
-.signal-pos { background:var(--green-dim); color:var(--green); }
-
-/* DEMO TABLE */
-.demo-table-wrap { overflow-x:auto; }
-.demo-table { width:100%; border-collapse:collapse; font-size:13px; }
-.demo-table th { font-family:var(--mono); font-size:8px; color:var(--muted); letter-spacing:0.12em; text-transform:uppercase; padding:8px 12px; text-align:left; border-bottom:1px solid var(--border); white-space:nowrap; }
-.demo-table td { padding:10px 12px; border-bottom:1px solid var(--border2); vertical-align:middle; }
-.demo-table tbody tr:hover td { background:rgba(255,255,255,0.015); }
-.demo-group { font-weight:700; font-size:14px; }
-.dem-td { color:var(--d2); font-weight:700; font-size:14px; }
-.rep-td { color:var(--r2); font-weight:700; font-size:14px; }
-.mini-bar { height:8px; background:var(--s3); border-radius:3px; overflow:hidden; display:flex; min-width:80px; }
-.mini-bar-d { background:var(--d); border-radius:3px 0 0 3px; }
-.mini-bar-r { background:var(--r); flex:1; }
-.trend { font-family:var(--mono); font-size:9px; }
-.trend.up-d { color:var(--d2); }
-.trend.up-r { color:var(--r2); }
-.trend.flat { color:var(--muted); }
-
-/* POLLS TAB */
-.polls-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px; }
-@media(max-width:600px){ .polls-grid{ grid-template-columns:1fr; } }
-.poll-card { background:var(--s1); border:1px solid var(--border); border-radius:5px; padding:14px; }
-.poll-src { font-family:var(--mono); font-size:8px; color:var(--muted); letter-spacing:0.12em; margin-bottom:8px; text-transform:uppercase; }
-.poll-nums { display:flex; gap:16px; align-items:baseline; margin-bottom:8px; }
-.poll-big-d { font-size:28px; font-weight:900; color:var(--d2); letter-spacing:-0.03em; }
-.poll-big-r { font-size:28px; font-weight:900; color:var(--r2); letter-spacing:-0.03em; }
-.poll-vs { color:var(--faint); font-size:16px; font-weight:300; }
-.poll-spread { font-size:12px; font-weight:700; letter-spacing:0.05em; }
-.poll-spread.dem { color:var(--d2); }
-.poll-spread.rep { color:var(--r2); }
-.mini-vote-bar { height:6px; background:var(--s3); border-radius:3px; overflow:hidden; display:flex; gap:2px; }
-.mvb-d { background:var(--d); border-radius:3px; }
-.mvb-r { background:var(--r); border-radius:3px; }
-.poll-meta-small { font-family:var(--mono); font-size:8px; color:var(--muted); margin-top:6px; }
-.avg-row { background:var(--s2); border:1px solid rgba(0,212,180,0.2); border-radius:5px; padding:16px 20px; display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-bottom:18px; }
-.avg-label { font-family:var(--mono); font-size:9px; letter-spacing:0.15em; color:var(--accent); text-transform:uppercase; flex-shrink:0; }
-.avg-bar-outer { flex:1; min-width:150px; }
-.avg-bar { height:16px; border-radius:3px; background:var(--s3); overflow:hidden; display:flex; }
-.avg-d { background:linear-gradient(90deg,#0a2d9e,var(--d2)); display:flex; align-items:center; justify-content:flex-end; padding-right:6px; font-family:var(--mono); font-size:9px; font-weight:600; color:white; }
-.avg-r { background:linear-gradient(90deg,var(--r),#8b0805); flex:1; display:flex; align-items:center; padding-left:6px; font-family:var(--mono); font-size:9px; font-weight:600; color:white; }
-.avg-spread { font-size:24px; font-weight:900; color:var(--d2); letter-spacing:-0.03em; flex-shrink:0; }
-.avg-spread-note { font-family:var(--mono); font-size:8px; color:var(--muted); }
-
-/* METHODOLOGY WEIGHTS */
-.method-weights { display:flex; flex-direction:column; gap:0; }
-.weight-row { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--border2); }
-.weight-row:last-child { border-bottom:none; }
-.weight-rank { font-family:var(--mono); font-size:10px; color:var(--faint); width:16px; flex-shrink:0; }
-.weight-icon { font-size:16px; flex-shrink:0; width:22px; }
-.weight-name { font-size:14px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; flex:1; }
-.weight-desc { font-size:11px; color:var(--muted); font-weight:400; }
-.weight-bar-outer { width:140px; height:5px; background:var(--s3); border-radius:3px; overflow:hidden; flex-shrink:0; }
-.weight-bar-inner { height:100%; border-radius:3px; background:linear-gradient(90deg,var(--accent),#008a75); }
-.weight-pct { font-family:var(--mono); font-size:11px; color:var(--accent); width:36px; text-align:right; flex-shrink:0; font-weight:600; }
-.method-sources { margin-top:18px; display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:6px; }
-.source-pill { background:var(--s2); border:1px solid var(--border2); border-radius:4px; padding:7px 12px; font-family:var(--mono); font-size:9px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; }
-
-/* SEARCH BAR */
-.search-bar { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
-.search-input { flex:1; background:var(--s1); border:1px solid var(--border); border-radius:4px; padding:9px 14px; font-family:var(--mono); font-size:11px; color:var(--text); letter-spacing:0.05em; outline:none; transition:border-color 0.15s; }
-.search-input::placeholder { color:var(--muted); }
-.search-input:focus { border-color:var(--accent); }
-.search-count { font-family:var(--mono); font-size:9px; color:var(--muted); white-space:nowrap; }
+/* SIGNAL STRIP */
+.signal-strip {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  padding: 14px 18px;
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 32px;
+  align-items: center;
+}
+.ss-label {
+  font-family: var(--mono); font-size: 8px; letter-spacing: 0.15em;
+  color: var(--muted); text-transform: uppercase; flex-shrink: 0;
+  margin-right: 4px;
+}
+.ss-item {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em;
+  padding: 4px 10px; border-radius: 3px; white-space: nowrap;
+}
+.ss-d  { background: var(--d-dim); color: var(--d2); border: 1px solid rgba(61,110,245,0.2); }
+.ss-r  { background: var(--r-dim); color: var(--r2); border: 1px solid rgba(224,48,48,0.2); }
+.ss-a  { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(0,255,179,0.15); }
+.ss-g  { background: var(--gold-dim); color: var(--gold); border: 1px solid rgba(255,199,68,0.2); }
 
 /* FOOTER */
-footer { border-top:1px solid var(--border); padding:22px 0; font-family:var(--mono); font-size:8px; color:var(--muted); letter-spacing:0.08em; line-height:1.8; }
-.footer-inner { display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+footer {
+  text-align: center;
+  font-family: var(--mono); font-size: 8px; color: var(--faint);
+  letter-spacing: 0.1em; line-height: 2;
+}
+footer a { color: var(--muted); text-decoration: none; }
+footer a:hover { color: var(--accent); }
 
-/* RESPONSIVE */
-@media(max-width:500px){ .race-type-tabs { flex-direction:column; } .rtt { border-right:none; border-bottom:1px solid var(--border); } }
+/* FADE IN */
+.fade { opacity:0; animation: fadeUp 0.5s ease forwards; }
+@keyframes fadeUp { to { opacity:1; transform:translateY(0); } from { transform:translateY(14px); } }
+.d1{animation-delay:.05s} .d2{animation-delay:.12s} .d3{animation-delay:.2s}
+.d4{animation-delay:.28s} .d5{animation-delay:.36s}
 </style>
 </head>
 <body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
 
-<header>
-  <div class="header-bar">
-    <div>
-      <div class="logo-mark">AXIOM <span>// ELECTION INTELLIGENCE</span></div>
-      <div class="header-title">2026 Midterm Forecast</div>
-    </div>
-    <div class="header-meta">
-      <div><span class="live-chip"><span class="live-dot"></span> LIVE DATA</span></div>
-      Updated: Feb 26, 2026<br>
-      Sources: 14 pollsters · Cook · Sabato · Ballotpedia
-    </div>
-  </div>
-  <div class="nav-tabs">
-    <div class="nav-tab active" data-tab="overview" onclick="switchTab('overview')">Overview</div>
-    <div class="nav-tab" data-tab="races" onclick="switchTab('races')">All Races</div>
-    <div class="nav-tab" data-tab="economy" onclick="switchTab('economy')">Economy</div>
-    <div class="nav-tab" data-tab="polls" onclick="switchTab('polls')">Polling</div>
-    <div class="nav-tab" data-tab="demos" onclick="switchTab('demos')">Demographics</div>
-    <div class="nav-tab" data-tab="methodology" onclick="switchTab('methodology')">Methodology</div>
-  </div>
-</header>
+<div class="container">
 
-<div class="ticker-wrap">
-  <div class="ticker-inner">
-    <div class="ticker-item"><span class="hi">GENERIC BALLOT</span><span class="ticker-sep">|</span><span class="dem">DEM +5.2</span> weighted avg · 6 major trackers</div>
-    <div class="ticker-item"><span class="hi">EMERSON (FEB 22)</span><span class="ticker-sep">|</span><span class="dem">DEM 50 – REP 42</span> likely voters</div>
-    <div class="ticker-item"><span class="hi">TRUMP APPROVAL</span><span class="ticker-sep">|</span><span class="warn">~41% approve / 56% disapprove</span> CNN avg · 134 polls</div>
-    <div class="ticker-item"><span class="hi">GEORGIA (OSSOFF)</span><span class="ticker-sep">|</span><span class="dem">LEANS DEM</span> — upgraded from Toss-Up (Sabato Jan 29)</div>
-    <div class="ticker-item"><span class="hi">MICHIGAN OPEN SEAT</span><span class="ticker-sep">|</span><span class="warn">TOSS-UP</span> — Peters retiring · Trump won state R+1.4</div>
-    <div class="ticker-item"><span class="hi">NC SENATE</span><span class="ticker-sep">|</span><span class="warn">TOSS-UP</span> — Tillis (R) incumbent · Open if Cooper (D) enters</div>
-    <div class="ticker-item"><span class="hi">MAINE SENATE</span><span class="ticker-sep">|</span><span class="warn">LEAN REP</span> — Collins most vulnerable R · Harris +6.9 state</div>
-    <div class="ticker-item"><span class="hi">DEM ENTHUSIASM</span><span class="ticker-sep">|</span><span class="dem">+14pts</span> — largest gap in decades · WaPo Feb 25</div>
-    <div class="ticker-item"><span class="hi">NY-17 (LAWLER)</span><span class="ticker-sep">|</span><span class="warn">TOSS-UP</span> — moved from Lean R · Jan 15 Cook update</div>
-    <div class="ticker-item"><span class="hi">ALASKA SENATE</span><span class="ticker-sep">|</span><span class="warn">LEAN REP</span> — Sullivan downgraded · Peltola (D) entered race</div>
-    <!-- dup for seamless loop -->
-    <div class="ticker-item"><span class="hi">GENERIC BALLOT</span><span class="ticker-sep">|</span><span class="dem">DEM +5.2</span> weighted avg · 6 major trackers</div>
-    <div class="ticker-item"><span class="hi">EMERSON (FEB 22)</span><span class="ticker-sep">|</span><span class="dem">DEM 50 – REP 42</span> likely voters</div>
-    <div class="ticker-item"><span class="hi">TRUMP APPROVAL</span><span class="ticker-sep">|</span><span class="warn">~41% approve / 56% disapprove</span> CNN avg · 134 polls</div>
-    <div class="ticker-item"><span class="hi">GEORGIA (OSSOFF)</span><span class="ticker-sep">|</span><span class="dem">LEANS DEM</span> — upgraded from Toss-Up (Sabato Jan 29)</div>
-    <div class="ticker-item"><span class="hi">MICHIGAN OPEN SEAT</span><span class="ticker-sep">|</span><span class="warn">TOSS-UP</span> — Peters retiring · Trump won state R+1.4</div>
-    <div class="ticker-item"><span class="hi">NC SENATE</span><span class="ticker-sep">|</span><span class="warn">TOSS-UP</span> — Tillis (R) incumbent · Open if Cooper (D) enters</div>
-    <div class="ticker-item"><span class="hi">MAINE SENATE</span><span class="ticker-sep">|</span><span class="warn">LEAN REP</span> — Collins most vulnerable R · Harris +6.9 state</div>
-    <div class="ticker-item"><span class="hi">DEM ENTHUSIASM</span><span class="ticker-sep">|</span><span class="dem">+14pts</span> — largest gap in decades · WaPo Feb 25</div>
-    <div class="ticker-item"><span class="hi">NY-17 (LAWLER)</span><span class="ticker-sep">|</span><span class="warn">TOSS-UP</span> — moved from Lean R · Jan 15 Cook update</div>
-    <div class="ticker-item"><span class="hi">ALASKA SENATE</span><span class="ticker-sep">|</span><span class="warn">LEAN REP</span> — Sullivan downgraded · Peltola (D) entered race</div>
+  <!-- HERO -->
+  <div class="hero fade d1">
+    <div class="eyebrow"><span class="dot"></span>2026 Midterm Election Suite</div>
+    <div class="logo">AXIOM</div>
+    <div class="tagline">Election Intelligence · Three Tools · One Model</div>
+    <div class="hero-stats">
+      <div class="hs"><span class="dot"></span><span>House:</span><span class="hs-val hs-d">D+22 projected</span></div>
+      <div class="hs"><span>Senate:</span><span class="hs-val hs-r">R hold projected</span></div>
+      <div class="hs"><span>Generic ballot:</span><span class="hs-val hs-d">D+5.2</span></div>
+      <div class="hs"><span>Model confidence:</span><span class="hs-val hs-a">67%</span></div>
+    </div>
   </div>
+
+  <!-- SIGNAL STRIP -->
+  <div class="signal-strip fade d2">
+    <span class="ss-label">Live signals</span>
+    <span class="ss-d">Emerson Feb 22 · D+8 LV</span>
+    <span class="ss-d">Fox News Jan 26 · D+6</span>
+    <span class="ss-g">Kalshi · D House 62%</span>
+    <span class="ss-r">R Senate 58%</span>
+    <span class="ss-a">Dem enthusiasm gap +14pts</span>
+    <span class="ss-d">Trump approval ~41%</span>
+  </div>
+
+  <!-- TOOL CARDS -->
+  <div class="tools fade d3">
+
+    <!-- FORECAST MODEL -->
+    <a class="tool-card card-forecast" href="2026-midterm-forecast-v2.html">
+      <span class="card-num">Tool 01</span>
+      <div class="card-icon">📊</div>
+      <div class="card-title">Forecast Model</div>
+      <div class="card-desc">Full race-by-race model for all 35 Senate seats and 42 competitive House districts. Includes bias-adjustment sliders and polling averages.</div>
+      <div class="card-features">
+        <div class="cf">77 races rated</div>
+        <div class="cf">Polling bias correction</div>
+        <div class="cf">Interactive sliders</div>
+        <div class="cf">Economic indicators</div>
+        <div class="cf">Demographic breakdown</div>
+      </div>
+      <div class="card-cta">Open Model →</div>
+    </a>
+
+    <!-- LIVE DASHBOARD -->
+    <a class="tool-card card-live" href="axiom-live.html">
+      <div class="live-badge"><span class="dot"></span>LIVE</div>
+      <span class="card-num">Tool 02</span>
+      <div class="card-icon">⚡</div>
+      <div class="card-title">Live Dashboard</div>
+      <div class="card-desc">Real-time prediction market odds from Kalshi and Polymarket, crossed with live Reddit sentiment from 4 subreddits. Auto-refreshes every 5 minutes.</div>
+      <div class="card-features">
+        <div class="cf">Kalshi + Polymarket live odds</div>
+        <div class="cf">Reddit r/politics · r/Conservative</div>
+        <div class="cf">Model vs. market divergence</div>
+        <div class="cf">Auto-refresh every 5 min</div>
+        <div class="cf">Sentiment by topic</div>
+      </div>
+      <div class="card-cta">Open Dashboard →</div>
+    </a>
+
+    <!-- MAP -->
+    <a class="tool-card card-map" href="axiom-map.html">
+      <span class="card-num">Tool 03</span>
+      <div class="card-icon">🗺</div>
+      <div class="card-title">Race Map</div>
+      <div class="card-desc">Interactive US map with all 50 states colored by race rating. Click any state for detailed polling, candidates, and model notes.</div>
+      <div class="card-features">
+        <div class="cf">All 50 states mapped</div>
+        <div class="cf">Senate + House views</div>
+        <div class="cf">Click for race detail</div>
+        <div class="cf">Competitive-only filter</div>
+        <div class="cf">Live seat count bar</div>
+      </div>
+      <div class="card-cta">Open Map →</div>
+    </a>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="fade d5">
+    AXIOM Election Intelligence · Built Feb 2026 · Data through Feb 26, 2026<br>
+    Model: Economic Fundamentals (35%) + Polling (30%) + Sentiment (20%) + Demographics (15%)<br>
+    Sources: Emerson · Fox · Morning Consult · Silver Bulletin · Ballotpedia · Pew · Kalshi · Polymarket · Reddit<br><br>
+    A probabilistic model — not a prediction. All forecasts carry uncertainty.
+  </footer>
+
 </div>
-
-<!-- ==================== OVERVIEW ==================== -->
-<div id="tab-overview" class="tab-content active">
-<div class="wrap">
-  <div class="hero">
-    <div class="hero-grid">
-      <div class="hero-cell fade d1">
-        <div class="hero-cell-label">House Projection</div>
-        <div class="hero-big-num dem">+22</div>
-        <div class="hero-sub"><strong>Democrats</strong> · projected net seat gain</div>
-        <div class="hero-sub" style="margin-top:4px;font-size:11px;color:var(--muted)">Current: R +4 (219–216) · Need D+4 for majority</div>
-      </div>
-      <div class="hero-cell fade d2">
-        <div class="hero-cell-label">Senate Projection</div>
-        <div class="hero-big-num rep">+2</div>
-        <div class="hero-sub"><strong>Republicans</strong> · projected net seat gain</div>
-        <div class="hero-sub" style="margin-top:4px;font-size:11px;color:var(--muted)">Current: R 53–D 47 · Dems need D+4 for majority</div>
-      </div>
-      <div class="hero-cell fade d3">
-        <div class="hero-cell-label">Model Confidence</div>
-        <div class="hero-big-num teal">67%</div>
-        <div class="hero-sub"><strong>D-House / R-Senate</strong> split most likely</div>
-        <div class="hero-sub" style="margin-top:4px;font-size:11px;color:var(--muted)">9 months remaining · High uncertainty</div>
-      </div>
-    </div>
-
-    <div class="seat-bar-wrap fade d4">
-      <div class="seat-bar-label-row">
-        <span style="color:var(--d2);font-weight:600;">HOUSE — DEMOCRATS</span>
-        <span style="color:var(--muted);">← 218 needed →</span>
-        <span style="color:var(--r2);font-weight:600;">REPUBLICANS</span>
-      </div>
-      <div class="seat-bar">
-        <div class="d-seg" style="width:54.8%">238</div>
-        <div class="r-seg">197</div>
-        <div class="majority-line"></div>
-      </div>
-      <div class="majority-line-label">218 = House Majority</div>
-    </div>
-
-    <div class="seat-bar-wrap fade d5" style="margin-top:14px;">
-      <div class="seat-bar-label-row">
-        <span style="color:var(--d2);font-weight:600;">SENATE — DEMOCRATS</span>
-        <span style="color:var(--muted);">← 51 needed →</span>
-        <span style="color:var(--r2);font-weight:600;">REPUBLICANS</span>
-      </div>
-      <div class="seat-bar">
-        <div class="d-seg" style="width:44%">45</div>
-        <div class="r-seg">55</div>
-        <div class="majority-line"></div>
-      </div>
-      <div class="majority-line-label">51 = Senate Majority</div>
-    </div>
-
-    <div class="verdict-banner fade d5">
-      <span class="verdict-tag split">SPLIT CONGRESS</span>
-      <span class="verdict-tag dem">D HOUSE</span>
-      <span class="verdict-tag rep">R SENATE</span>
-      <div class="verdict-text">
-        18 of 20 post-WWII midterms saw the president's party lose House seats. With Trump at <strong>~41% approval</strong>, unemployment rising to <strong>4.6%</strong>, and Democrats showing a <strong>+14pt enthusiasm gap</strong>, structural environment strongly favors a Democratic House. But the Senate map is brutal — Democrats defending competitive seats in <strong>NC, OH, AZ, and MI</strong> while only targeting Collins (ME) among Republicans.
-      </div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-header fade d1">
-      <div class="section-num">01</div>
-      <div class="section-title">Outcome Probabilities</div>
-      <div class="section-badge badge-accent">MODEL OUTPUT</div>
-    </div>
-    <div class="prob-cards">
-      <div class="prob-card fade d2">
-        <div class="prob-card-header">House Control <span class="section-badge badge-dem">9 MO OUT</span></div>
-        <div class="prob-ring-wrap">
-          <svg width="100" height="100" viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="42" fill="none" stroke="var(--s3)" stroke-width="10"/>
-            <circle cx="50" cy="50" r="42" fill="none" stroke="var(--d2)" stroke-width="10" stroke-dasharray="263.9" stroke-dashoffset="94.9"/>
-          </svg>
-          <div class="prob-center"><div class="prob-pct" style="color:var(--d2)">64%</div><div class="prob-party">DEM</div></div>
-        </div>
-        <div class="prob-desc">D: 64% | R: 36%</div>
-      </div>
-      <div class="prob-card fade d3">
-        <div class="prob-card-header">Senate Control <span class="section-badge badge-rep">9 MO OUT</span></div>
-        <div class="prob-ring-wrap">
-          <svg width="100" height="100" viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="42" fill="none" stroke="var(--s3)" stroke-width="10"/>
-            <circle cx="50" cy="50" r="42" fill="none" stroke="var(--r2)" stroke-width="10" stroke-dasharray="263.9" stroke-dashoffset="110.8"/>
-          </svg>
-          <div class="prob-center"><div class="prob-pct" style="color:var(--r2)">58%</div><div class="prob-party">REP</div></div>
-        </div>
-        <div class="prob-desc">R: 58% | D: 42%</div>
-      </div>
-      <div class="prob-card fade d4">
-        <div class="prob-card-header">D Full Sweep <span class="section-badge badge-accent">MARKET</span></div>
-        <div class="prob-ring-wrap">
-          <svg width="100" height="100" viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="42" fill="none" stroke="var(--s3)" stroke-width="10"/>
-            <circle cx="50" cy="50" r="42" fill="none" stroke="var(--accent)" stroke-width="10" stroke-dasharray="263.9" stroke-dashoffset="161.9"/>
-          </svg>
-          <div class="prob-center"><div class="prob-pct" style="color:var(--accent)">39%</div><div class="prob-party">D SWEEP</div></div>
-        </div>
-        <div class="prob-desc">Kalshi market: 39%</div>
-      </div>
-    </div>
-    <div class="analysis-block fade d5">
-      <strong>Bias-adjusted model note:</strong> Raw polls currently show D+5.2 on the generic ballot. After applying the polling bias correction (midterm-weighted: 2018 D+0.8, 2022 D+0.8 per 538 — near-zero systemic bias in non-Trump-ballot midterms), the adjusted generic ballot is <strong class="d">D +4.4</strong>. Historical calibration: a D+4–5 generic ballot environment 9 months out corresponds to <span class="a">D+15 to D+30 House seats</span>, with the median near +22. Senate remains structurally GOP-favored regardless of national environment. Model updated 26 Feb 2026. <strong>→ <a href="#" onclick="switchTab('races');return false;" style="color:var(--accent);">Explore all 35 Senate + 60+ House races →</a></strong>
-    </div>
-  </div>
-</div>
-</div>
-
-<!-- ==================== RACES TAB ==================== -->
-<div id="tab-races" class="tab-content">
-<div class="wrap">
-  <div class="section" style="border-top:none;padding-top:24px;">
-    <div class="section-header fade d1">
-      <div class="section-num">★</div>
-      <div class="section-title">Race Explorer</div>
-      <div class="section-badge badge-accent">INTERACTIVE</div>
-    </div>
-
-    <!-- BIAS ADJUSTER -->
-    <div class="bias-panel fade d2">
-      <div class="bias-title">Polling Bias Adjustment Engine</div>
-      <div class="bias-controls">
-        <div class="bias-ctrl">
-          <label>Generic Ballot Adjustment <span id="gb-adj-val">D+0.8</span></label>
-          <input type="range" class="bias-slider" id="gb-adj" min="-5" max="5" step="0.5" value="0.8" oninput="updateBias()">
-        </div>
-        <div class="bias-ctrl">
-          <label>Trump States Penalty (non-college whites) <span id="trump-adj-val">R+1.5</span></label>
-          <input type="range" class="bias-slider" id="trump-adj" min="-4" max="4" step="0.5" value="1.5" oninput="updateBias()">
-        </div>
-        <div class="bias-ctrl">
-          <label>Dem Enthusiasm Premium <span id="enthus-adj-val">D+1.2</span></label>
-          <input type="range" class="bias-slider" id="enthus-adj" min="-3" max="3" step="0.5" value="1.2" oninput="updateBias()">
-        </div>
-        <div class="bias-ctrl">
-          <label>Midterm Turnout Weight <span id="mid-adj-val">×1.0</span></label>
-          <input type="range" class="bias-slider" id="mid-adj" min="0.5" max="2" step="0.1" value="1.0" oninput="updateBias()">
-        </div>
-      </div>
-      <div class="bias-legend">
-        <span><span class="bl-dot" style="background:var(--accent)"></span> 2022 midterm bias: D+0.8 (538)</span>
-        <span><span class="bl-dot" style="background:var(--d2)"></span> 2018 midterm bias: D+0.7 (538)</span>
-        <span><span class="bl-dot" style="background:var(--r2)"></span> 2020 presidential bias: D+4.7</span>
-        <span><span class="bl-dot" style="background:var(--warn)"></span> 2016 presidential bias: D+3.0</span>
-        <span><span class="bl-dot" style="background:var(--muted)"></span> Midterm-weighted default: <strong id="bias-summary" style="color:var(--accent)">D+0.8</strong></span>
-      </div>
-    </div>
-
-    <!-- RACE TYPE TABS -->
-    <div class="race-type-tabs fade d2">
-      <div class="rtt active" data-rtt="senate" onclick="switchRaceType('senate')">Senate (35 seats)</div>
-      <div class="rtt" data-rtt="house" onclick="switchRaceType('house')">House Competitive Seats</div>
-    </div>
-
-    <!-- SENATE RACES -->
-    <div id="rtt-senate" class="rtt-content active">
-      <div class="race-summary-bar fade d3" id="senate-summary-bar">
-        <div class="rsb-cell"><div class="rsb-num" style="color:var(--d2)" id="ss-safe-d">6</div><div class="rsb-label">Safe Dem</div></div>
-        <div class="rsb-cell"><div class="rsb-num" style="color:#6ba3ff" id="ss-likely-d">3</div><div class="rsb-label">Likely Dem</div></div>
-        <div class="rsb-cell"><div class="rsb-num" style="color:#8ab8ff" id="ss-lean-d">2</div><div class="rsb-label">Lean Dem</div></div>
-        <div class="rsb-cell"><div class="rsb-num" style="color:var(--toss)" id="ss-toss">4</div><div class="rsb-label">Toss-Up</div></div>
-        <div class="rsb-cell"><div class="rsb-num" style="color:#ffaa8a" id="ss-lean-r">3</div><div class="rsb-label">Lean Rep</div></div>
-        <div class="rsb-cell"><div class="rsb-num" style="color:#ff7b77" id="ss-likely-r">3</div><div class="rsb-label">Likely Rep</div></div>
-        <div class="rsb-cell"><div class="rsb-num" style="color:var(--r2)" id="ss-safe-r">14</div><div class="rsb-label">Safe Rep</div></div>
-      </div>
-
-      <div class="state-filter-bar fade d3">
-        <span class="filter-label">FILTER:</span>
-        <button class="filter-btn active" onclick="filterRaces(this,'all','senate')">All 35</button>
-        <button class="filter-btn f-toss" onclick="filterRaces(this,'toss','senate')">Toss-Up</button>
-        <button class="filter-btn f-leand" onclick="filterRaces(this,'lean-d','senate')">Lean/Likely D</button>
-        <button class="filter-btn f-leanr" onclick="filterRaces(this,'lean-r','senate')">Lean/Likely R</button>
-        <button class="filter-btn" onclick="filterRaces(this,'competitive','senate')">Competitive Only</button>
-      </div>
-
-      <div class="search-bar fade d3">
-        <input type="text" class="search-input" placeholder="Search by state or candidate..." oninput="searchRaces(this.value,'senate')" id="senate-search">
-        <span class="search-count" id="senate-count">35 races</span>
-      </div>
-
-      <div id="senate-races-list">
-        <!-- Generated by JS -->
-      </div>
-    </div>
-
-    <!-- HOUSE RACES -->
-    <div id="rtt-house" class="rtt-content">
-      <div class="race-summary-bar fade d3" id="house-summary-bar">
-        <div class="rsb-cell"><div class="rsb-num" style="color:#8ab8ff" id="hs-lean-d">12</div><div class="rsb-label">Lean Dem</div></div>
-        <div class="rsb-cell"><div class="rsb-num" style="color:var(--toss)" id="hs-toss">18</div><div class="rsb-label">Toss-Up</div></div>
-        <div class="rsb-cell"><div class="rsb-num" style="color:#ffaa8a" id="hs-lean-r">12</div><div class="rsb-label">Lean Rep</div></div>
-        <div class="rsb-cell"><div class="rsb-num" style="color:var(--d2)" id="hs-proj-gain">+22</div><div class="rsb-label">Proj. D Gain</div></div>
-      </div>
-
-      <div class="state-filter-bar fade d3">
-        <span class="filter-label">FILTER:</span>
-        <button class="filter-btn active" onclick="filterRaces(this,'all','house')">All Competitive</button>
-        <button class="filter-btn f-toss" onclick="filterRaces(this,'toss','house')">Toss-Ups</button>
-        <button class="filter-btn f-leand" onclick="filterRaces(this,'lean-d','house')">Lean Dem</button>
-        <button class="filter-btn f-leanr" onclick="filterRaces(this,'lean-r','house')">Lean Rep</button>
-      </div>
-
-      <div class="search-bar fade d3">
-        <input type="text" class="search-input" placeholder="Search district or incumbent..." oninput="searchRaces(this.value,'house')" id="house-search">
-        <span class="search-count" id="house-count">42 competitive races</span>
-      </div>
-
-      <div id="house-races-list">
-        <!-- Generated by JS -->
-      </div>
-    </div>
-  </div>
-</div>
-</div>
-
-<!-- ==================== ECONOMY ==================== -->
-<div id="tab-economy" class="tab-content">
-<div class="wrap">
-<div class="section" style="border-top:none;padding-top:24px;">
-  <div class="section-header fade d1">
-    <div class="section-num">01</div>
-    <div class="section-title">Economic Indicators</div>
-    <div class="section-badge badge-accent">MODEL WEIGHT #1</div>
-    <div class="weight-tag">35% OF FORECAST</div>
-  </div>
-  <div class="econ-grid">
-    <div class="econ-card mixed fade d1">
-      <span class="econ-icon">📉</span>
-      <div class="econ-name">Consumer Confidence</div>
-      <div class="econ-val mixed">91.2</div>
-      <div class="econ-sub">Feb 2026 · Expectations index below 80<br>Pessimistic territory historically</div>
-      <div class="econ-signal signal-mixed">MIXED</div>
-    </div>
-    <div class="econ-card neg fade d2">
-      <span class="econ-icon">👷</span>
-      <div class="econ-name">Unemployment Rate</div>
-      <div class="econ-val neg">4.6%</div>
-      <div class="econ-sub">Nov 2025 · Up from 4.0% in 2024<br>Rising trend; forecast 4.5% avg 2026</div>
-      <div class="econ-signal signal-neg">BEARISH</div>
-    </div>
-    <div class="econ-card mixed fade d3">
-      <span class="econ-icon">📦</span>
-      <div class="econ-name">Core Inflation (PCE)</div>
-      <div class="econ-val mixed">3.0%</div>
-      <div class="econ-sub">Forecast 2026 · Fed target: 2%<br>Tariff-driven; above target until 2028</div>
-      <div class="econ-signal signal-mixed">ELEVATED</div>
-    </div>
-    <div class="econ-card mixed fade d4">
-      <span class="econ-icon">🏗️</span>
-      <div class="econ-name">GDP Growth (Q3 2025)</div>
-      <div class="econ-val mixed">4.4%</div>
-      <div class="econ-sub">Strong Q3 · Q4 est ~2.2% annualized<br>Slowdown projected 2026: ~1.9–2.2%</div>
-      <div class="econ-signal signal-mixed">SLOWING</div>
-    </div>
-    <div class="econ-card neg fade d5">
-      <span class="econ-icon">🏭</span>
-      <div class="econ-name">Monthly Job Growth</div>
-      <div class="econ-val neg">53K</div>
-      <div class="econ-sub">Nov–Dec 2025 avg · Was 168K/mo 2024<br>Sharp decel from immigration/DOGE cuts</div>
-      <div class="econ-signal signal-neg">WEAK</div>
-    </div>
-    <div class="econ-card neg fade d1">
-      <span class="econ-icon">🏠</span>
-      <div class="econ-name">Consumer Spending</div>
-      <div class="econ-val neg">1.6%</div>
-      <div class="econ-sub">Projected 2026 · Down from 2.6% 2025<br>Tariff pass-through eroding power</div>
-      <div class="econ-signal signal-neg">BEARISH</div>
-    </div>
-    <div class="econ-card neg fade d2">
-      <span class="econ-icon">📊</span>
-      <div class="econ-name">Federal Deficit</div>
-      <div class="econ-val neg">7.1%</div>
-      <div class="econ-sub">% of GDP projected 2027 · Up from 6.1%<br>Debt service costs accelerating</div>
-      <div class="econ-signal signal-neg">BEARISH</div>
-    </div>
-    <div class="econ-card mixed fade d3">
-      <span class="econ-icon">🏦</span>
-      <div class="econ-name">Fed Funds Rate</div>
-      <div class="econ-val mixed">3.5%</div>
-      <div class="econ-sub">Jan 2026 · Fed paused · 3 cuts expected<br>Starting June · Target 2.75–3.0% yr-end</div>
-      <div class="econ-signal signal-mixed">CAUTIOUS</div>
-    </div>
-  </div>
-  <div class="analysis-block fade d4">
-    The economic picture strongly favors Democratic gains. The "Misery Index" (unemployment + inflation) sits at ~7.6 vs 6.9 a year ago. Monthly job creation collapsed from 168K/month in 2024 to 53K — a result of immigration crackdown and DOGE-driven federal workforce cuts. <strong>Countervailing force:</strong> the Supreme Court's tariff ruling (invalidating IEEPA authority) may defuse some economic attack lines if prices stabilize before November. <span class="r">Republicans</span> still lead Democrats by 6pts on "inflation/rising prices" trust despite the underlying economics — meaning the <span class="d">Democratic messaging challenge</span> remains how to translate economic pain into electoral accountability.
-  </div>
-</div>
-</div>
-</div>
-
-<!-- ==================== POLLS ==================== -->
-<div id="tab-polls" class="tab-content">
-<div class="wrap">
-<div class="section" style="border-top:none;padding-top:24px;">
-  <div class="section-header fade d1">
-    <div class="section-num">02</div>
-    <div class="section-title">Generic Ballot Polling</div>
-    <div class="section-badge badge-accent">MODEL WEIGHT #2</div>
-    <div class="weight-tag">30% OF FORECAST</div>
-  </div>
-  <div class="avg-row fade d2">
-    <div class="avg-label">POLLING AVG</div>
-    <div class="avg-bar-outer">
-      <div class="avg-bar">
-        <div class="avg-d" style="width:51.5%">D 47.3</div>
-        <div class="avg-r">R 42.1</div>
-      </div>
-    </div>
-    <div>
-      <div class="avg-spread">D +5.2</div>
-      <div class="avg-spread-note">Weighted avg · 6 trackers</div>
-    </div>
-  </div>
-  <div class="polls-grid">
-    <div class="poll-card fade d3" style="border-color:rgba(29,109,245,0.3);">
-      <div class="poll-src">Emerson College · Feb 21–22 · n=1,000 LV</div>
-      <div class="poll-nums"><span class="poll-big-d">50%</span><span class="poll-vs">vs</span><span class="poll-big-r">42%</span><span class="poll-spread dem">D +8</span></div>
-      <div class="mini-vote-bar"><div class="mvb-d" style="width:54%"></div><div class="mvb-r" style="width:45%"></div></div>
-      <div class="poll-meta-small">Independents: D 50 – R 37 · MoE ±3%</div>
-    </div>
-    <div class="poll-card fade d4" style="border-color:rgba(29,109,245,0.3);">
-      <div class="poll-src">Fox News · Jan 23–26 · n=1,005 RV</div>
-      <div class="poll-nums"><span class="poll-big-d">52%</span><span class="poll-vs">vs</span><span class="poll-big-r">46%</span><span class="poll-spread dem">D +6</span></div>
-      <div class="mini-vote-bar"><div class="mvb-d" style="width:53%"></div><div class="mvb-r" style="width:47%"></div></div>
-      <div class="poll-meta-small">Highest Dem margin ever recorded by Fox · MoE ±3%</div>
-    </div>
-    <div class="poll-card fade d5">
-      <div class="poll-src">Morning Consult · Feb 2–8 · n=24,675 RV</div>
-      <div class="poll-nums"><span class="poll-big-d">45%</span><span class="poll-vs">vs</span><span class="poll-big-r">42%</span><span class="poll-spread dem">D +3</span></div>
-      <div class="mini-vote-bar"><div class="mvb-d" style="width:52%"></div><div class="mvb-r" style="width:48%"></div></div>
-      <div class="poll-meta-small">Largest sample · Independents D+10 · MoE ±1%</div>
-    </div>
-    <div class="poll-card fade d5">
-      <div class="poll-src">Silver Bulletin Weighted · updated daily</div>
-      <div class="poll-nums"><span class="poll-big-d">~47%</span><span class="poll-vs">vs</span><span class="poll-big-r">~42%</span><span class="poll-spread dem">D +5</span></div>
-      <div class="mini-vote-bar"><div class="mvb-d" style="width:52%"></div><div class="mvb-r" style="width:47%"></div></div>
-      <div class="poll-meta-small">House-effects adjusted · grade/recency/size weighted</div>
-    </div>
-    <div class="poll-card fade d4">
-      <div class="poll-src">Ballotpedia Avg · Feb 20 · multi-source</div>
-      <div class="poll-nums"><span class="poll-big-d">—</span><span class="poll-vs"></span><span class="poll-big-r">—</span><span class="poll-spread dem">D +5</span></div>
-      <div class="mini-vote-bar"><div class="mvb-d" style="width:52%"></div><div class="mvb-r" style="width:47%"></div></div>
-      <div class="poll-meta-small">Aggregates CBS/NYT, Economist/YouGov, Fox, Pew, Quinnipiac, Reuters/Ipsos</div>
-    </div>
-    <div class="poll-card fade d3">
-      <div class="poll-src">Public Polling Project · Feb 16–18 · RV</div>
-      <div class="poll-nums"><span class="poll-big-d">42%</span><span class="poll-vs">vs</span><span class="poll-big-r">42%</span><span class="poll-spread" style="color:var(--muted)">TIED</span></div>
-      <div class="mini-vote-bar"><div class="mvb-d" style="width:50%"></div><div class="mvb-r" style="width:50%"></div></div>
-      <div class="poll-meta-small">Outlier · 43% strongly disapprove Trump</div>
-    </div>
-  </div>
-  <div class="analysis-block fade d5">
-    Polling consistently shows D+3 to D+8, with the larger margin in likely voter screens (suggesting higher Democratic motivation). <strong>Independents are the decisive signal:</strong> they break Democratic by 10–13 points in large-sample surveys — reminiscent of 2018. Historical calibration from 538: midterm polls in 2018 had D+0.7 bias and 2022 had D+0.8 bias. <strong>There is NO systematic partisan bias in non-presidential midterms</strong> — unlike 2016/2020 where Trump's presence on the ballot suppressed Republican response rates. Polls of midterm likely voters are generally reliable. Adjusted forecast: <strong>D+4.4 net generic ballot.</strong>
-  </div>
-</div>
-</div>
-</div>
-
-<!-- ==================== DEMOGRAPHICS ==================== -->
-<div id="tab-demos" class="tab-content">
-<div class="wrap">
-<div class="section" style="border-top:none;padding-top:24px;">
-  <div class="section-header fade d1">
-    <div class="section-num">03</div>
-    <div class="section-title">Demographic Trends</div>
-    <div class="section-badge badge-accent">MODEL WEIGHT #3</div>
-    <div class="weight-tag">15% OF FORECAST</div>
-  </div>
-  <div class="demo-table-wrap fade d2">
-    <table class="demo-table">
-      <thead>
-        <tr>
-          <th>Group</th><th>Dem%</th><th>Rep%</th><th>Lean</th><th>Trend vs 2022</th><th>Notes</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td><div class="demo-group">Gen Z (18–27)</div></td><td class="dem-td">62%</td><td class="rep-td">32%</td><td><div class="mini-bar"><div class="mini-bar-d" style="width:62%"></div><div class="mini-bar-r"></div></div></td><td><span class="trend up-d">↑ D+4pts</span></td><td style="font-size:11px;color:var(--muted)">Largest Dem youth bloc; DOGE/student debt mobilizing</td></tr>
-        <tr><td><div class="demo-group">Millennials (28–43)</div></td><td class="dem-td">54%</td><td class="rep-td">40%</td><td><div class="mini-bar"><div class="mini-bar-d" style="width:54%"></div><div class="mini-bar-r"></div></div></td><td><span class="trend flat">→ Stable</span></td><td style="font-size:11px;color:var(--muted)">Healthcare access top concern; housing costs</td></tr>
-        <tr><td><div class="demo-group">Gen X (44–59)</div></td><td class="dem-td">47%</td><td class="rep-td">48%</td><td><div class="mini-bar"><div class="mini-bar-d" style="width:47%"></div><div class="mini-bar-r"></div></div></td><td><span class="trend up-r">↑ R+2pts</span></td><td style="font-size:11px;color:var(--muted)">Only cohort trending R; economic anxiety mild softening</td></tr>
-        <tr><td><div class="demo-group">Baby Boomers (60+)</div></td><td class="dem-td">46%</td><td class="rep-td">50%</td><td><div class="mini-bar"><div class="mini-bar-d" style="width:46%"></div><div class="mini-bar-r"></div></div></td><td><span class="trend flat">→ Stable</span></td><td style="font-size:11px;color:var(--muted)">Healthcare cost concern may shift seniors on Medicare</td></tr>
-        <tr><td><div class="demo-group">College-Educated Whites</div></td><td class="dem-td">56%</td><td class="rep-td">38%</td><td><div class="mini-bar"><div class="mini-bar-d" style="width:56%"></div><div class="mini-bar-r"></div></div></td><td><span class="trend up-d">↑ D+5pts</span></td><td style="font-size:11px;color:var(--muted)">Suburban realignment; DOGE/institutions driving shift</td></tr>
-        <tr><td><div class="demo-group">Non-College Whites</div></td><td class="dem-td">33%</td><td class="rep-td">62%</td><td><div class="mini-bar"><div class="mini-bar-d" style="width:33%"></div><div class="mini-bar-r"></div></div></td><td><span class="trend up-r">↑ R+3pts</span></td><td style="font-size:11px;color:var(--muted)">Continued MAGA consolidation; tariff populism resonates</td></tr>
-        <tr><td><div class="demo-group">Black Voters</div></td><td class="dem-td">82%</td><td class="rep-td">12%</td><td><div class="mini-bar"><div class="mini-bar-d" style="width:82%"></div><div class="mini-bar-r"></div></div></td><td><span class="trend flat">→ Stable</span></td><td style="font-size:11px;color:var(--muted)">Stable Dem anchor; turnout motivation key</td></tr>
-        <tr><td><div class="demo-group">Hispanic Voters</div></td><td class="dem-td">57%</td><td class="rep-td">37%</td><td><div class="mini-bar"><div class="mini-bar-d" style="width:57%"></div><div class="mini-bar-r"></div></div></td><td><span class="trend up-d">↑ D+6pts ← KEY</span></td><td style="font-size:11px;color:var(--muted)">Venezuela action: 58% disapproval surged (Emerson Feb 26)</td></tr>
-        <tr><td><div class="demo-group">College Women</div></td><td class="dem-td">65%</td><td class="rep-td">30%</td><td><div class="mini-bar"><div class="mini-bar-d" style="width:65%"></div><div class="mini-bar-r"></div></div></td><td><span class="trend up-d">↑ D+3pts</span></td><td style="font-size:11px;color:var(--muted)">Post-Dobbs mobilization ongoing; healthcare concerns</td></tr>
-        <tr><td><div class="demo-group">Suburban Independents</div></td><td class="dem-td">52%</td><td class="rep-td">37%</td><td><div class="mini-bar"><div class="mini-bar-d" style="width:52%"></div><div class="mini-bar-r"></div></div></td><td><span class="trend up-d">↑ D+8pts ← DECISIVE</span></td><td style="font-size:11px;color:var(--muted)">Morning Consult: Independents D+10; most pivotal bloc</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="analysis-block fade d3" style="margin-top:14px;">
-    Three demographic shifts most shape this forecast. <strong class="d">Hispanic voters have swung sharply Democratic</strong> following the Venezuela action (+6pt swing). <strong class="d">Suburban independents</strong> remain decisive — D+10 in large-sample tracking. <strong class="r">Non-college whites continue GOP consolidation</strong>, limiting Democratic rural gains. <strong>Net demographic effect:</strong> approximately +1.2 to +1.8 adjusted Democratic advantage applied to competitive district/state modeling.
-  </div>
-</div>
-</div>
-</div>
-
-<!-- ==================== METHODOLOGY ==================== -->
-<div id="tab-methodology" class="tab-content">
-<div class="wrap">
-<div class="section" style="border-top:none;padding-top:24px;">
-  <div class="section-header fade d1">
-    <div class="section-num">⚙</div>
-    <div class="section-title">Model Methodology</div>
-    <div class="section-badge badge-accent">HOW IT WORKS</div>
-  </div>
-  <div class="card fade d2" style="margin-bottom:14px;">
-    <div class="method-weights">
-      <div class="weight-row">
-        <div class="weight-rank">#1</div><div class="weight-icon">📊</div>
-        <div><div class="weight-name">Economic Fundamentals</div><div class="weight-desc">Presidential approval, unemployment, inflation (PCE), consumer confidence, GDP trend, real wage growth, misery index. Single best historical predictor of midterm seat change 6–9 months out.</div></div>
-        <div class="weight-bar-outer"><div class="weight-bar-inner" style="width:100%"></div></div>
-        <div class="weight-pct">35%</div>
-      </div>
-      <div class="weight-row">
-        <div class="weight-rank">#2</div><div class="weight-icon">🗳️</div>
-        <div><div class="weight-name">Generic Ballot Polling</div><div class="weight-desc">Weighted average of 6 major trackers. Weights applied by recency, sample size, and pollster historical accuracy grade. Bias-corrected for midterm turnout patterns (2018/2022: ~D+0.8 systematic bias). Likely voter screens applied where available.</div></div>
-        <div class="weight-bar-outer"><div class="weight-bar-inner" style="width:86%"></div></div>
-        <div class="weight-pct">30%</div>
-      </div>
-      <div class="weight-row">
-        <div class="weight-rank">#3</div><div class="weight-icon">👥</div>
-        <div><div class="weight-name">Demographic &amp; Population Trends</div><div class="weight-desc">Crosstab analysis from Pew, Morning Consult, Emerson, and historical exit poll modeling. Tracks generational replacement, educational sorting, suburban realignment, Hispanic voter composition changes. Bias-adjusted: pollster records suggest non-college white outperformance in presidential cycles but not midterms. Weight grows as election nears.</div></div>
-        <div class="weight-bar-outer"><div class="weight-bar-inner" style="width:43%"></div></div>
-        <div class="weight-pct">15%</div>
-      </div>
-      <div class="weight-row">
-        <div class="weight-rank">#4</div><div class="weight-icon">📰</div>
-        <div><div class="weight-name">News &amp; Political Sentiment</div><div class="weight-desc">Qualitative/quantitative scoring of political events, enthusiasm gap surveys, presidential conduct narratives, institutional trust data (Pew, Gallup), and prediction market pricing (Kalshi/Polymarket). Captures real-time narrative shifts not yet priced into polls.</div></div>
-        <div class="weight-bar-outer"><div class="weight-bar-inner" style="width:57%"></div></div>
-        <div class="weight-pct">20%</div>
-      </div>
-    </div>
-  </div>
-  <div class="section-header fade d3" style="margin-top:18px;">
-    <div class="section-num">⚡</div>
-    <div class="section-title" style="font-size:16px;">Bias Correction Framework</div>
-  </div>
-  <div class="analysis-block fade d4" style="margin-bottom:14px;">
-    <strong>Midterm-weighted polling bias (2018+2022 avg ÷ 2, per 538):</strong> D+0.8. This is applied by default. The <strong class="a">interactive bias adjuster</strong> on the Races tab lets you model alternate scenarios — e.g., what happens if Republicans outperform by D+3 (2020 presidential pattern) vs. if Democrats overperform by R+1.5. <br><br>
-    <strong>Key bias research findings:</strong> Trump's presence on the ballot (2016, 2020, 2024) consistently suppressed Republican response rates, creating D+3–5 polling errors. Midterms without Trump on the ballot (2018, 2022) showed D+0.7–0.8 systematic bias — near-zero. This model weights heavily toward midterm-cycle behavior. <strong>State-level variance</strong> is also modeled: states with large non-college white populations (OH, WI, PA) historically show an additional R+0.5–1.5 correction vs. national environment.
-  </div>
-  <div class="section-header fade d3">
-    <div class="section-num">📚</div>
-    <div class="section-title" style="font-size:16px;">Data Sources</div>
-  </div>
-  <div class="method-sources fade d4">
-    <div class="source-pill">Silver Bulletin / Nate Silver</div>
-    <div class="source-pill">Cook Political Report</div>
-    <div class="source-pill">Sabato's Crystal Ball</div>
-    <div class="source-pill">Inside Elections</div>
-    <div class="source-pill">Ballotpedia</div>
-    <div class="source-pill">Morning Consult</div>
-    <div class="source-pill">Emerson College</div>
-    <div class="source-pill">Fox News Polls</div>
-    <div class="source-pill">Pew Research Center</div>
-    <div class="source-pill">Gallup (thru Dec 2025)</div>
-    <div class="source-pill">CNN Poll of Polls</div>
-    <div class="source-pill">Economist / YouGov</div>
-    <div class="source-pill">Reuters / Ipsos</div>
-    <div class="source-pill">Quinnipiac University</div>
-    <div class="source-pill">AP-NORC</div>
-    <div class="source-pill">Kalshi Prediction Markets</div>
-    <div class="source-pill">Deloitte US Econ Forecast</div>
-    <div class="source-pill">J.P. Morgan Asset Mgmt</div>
-    <div class="source-pill">US Treasury TBAC</div>
-    <div class="source-pill">270toWin</div>
-    <div class="source-pill">FiveThirtyEight Archive</div>
-  </div>
-</div>
-</div>
-</div>
-
-<footer>
-  <div class="wrap">
-    <div class="footer-inner">
-      <div>AXIOM Election Forecast Model · v2.0 · Built Feb 26, 2026<br>Bias-corrected for midterm turnout. Polling data through Feb 26, 2026.<br>This is a probabilistic model — not a prediction. All forecasts carry uncertainty.</div>
-      <div style="text-align:right;">Economic Fundamentals (35%) + Generic Ballot Polling (30%) + News/Sentiment (20%) + Demographics (15%)<br>Polling bias correction: D+0.8 midterm-weighted (2018/2022 per 538) · adjustable in Race Explorer<br>Senate: Cook · Sabato · Inside Elections · Ballotpedia · Kalshi</div>
-    </div>
-  </div>
-</footer>
-
-<script>
-// ===================== DATA =====================
-
-const SENATE_RACES = [
-  // SAFE DEM
-  { state:'California', abbr:'CA', office:'Senate', incumbent:'Alex Padilla (D)', party:'D', ratingRaw:'safe-d', ratingLabel:'Safe Dem', open:false, pviBias:-15, notes:'Solid blue state; no credible GOP challenger expected', polls:[], winD:97, winR:3 },
-  { state:'Connecticut', abbr:'CT', office:'Senate', incumbent:'Chris Murphy (D)', party:'D', ratingRaw:'safe-d', ratingLabel:'Safe Dem', open:false, pviBias:-12, notes:'Safe Democratic; no serious opposition', polls:[], winD:96, winR:4 },
-  { state:'Delaware', abbr:'DE', office:'Senate', incumbent:'Lisa Blunt Rochester (D)', party:'D', ratingRaw:'safe-d', ratingLabel:'Safe Dem', open:false, pviBias:-14, notes:'Solidly blue', polls:[], winD:97, winR:3 },
-  { state:'Hawaii', abbr:'HI', office:'Senate', incumbent:'Brian Schatz (D)', party:'D', ratingRaw:'safe-d', ratingLabel:'Safe Dem', open:false, pviBias:-20, notes:'Solid D; running unopposed effectively', polls:[], winD:99, winR:1 },
-  { state:'Illinois', abbr:'IL', office:'Senate', incumbent:'Dick Durbin (D)', party:'D', ratingRaw:'safe-d', ratingLabel:'Safe Dem', open:true, pviBias:-12, notes:'Durbin retiring; open seat but solidly blue state', polls:[], winD:93, winR:7 },
-  { state:'Massachusetts', abbr:'MA', office:'Senate', incumbent:'Ed Markey (D)', party:'D', ratingRaw:'safe-d', ratingLabel:'Safe Dem', open:false, pviBias:-18, notes:'Safe blue', polls:[], winD:97, winR:3 },
-  { state:'New Mexico', abbr:'NM', office:'Senate', incumbent:'Ben Ray Luján (D)', party:'D', ratingRaw:'safe-d', ratingLabel:'Safe Dem', open:false, pviBias:-10, notes:'No declared GOP opponent; near-uncontested', polls:[], winD:96, winR:4 },
-  { state:'Oregon', abbr:'OR', office:'Senate', incumbent:'Ron Wyden (D)', party:'D', ratingRaw:'safe-d', ratingLabel:'Safe Dem', open:false, pviBias:-9, notes:'Safe Democratic', polls:[], winD:93, winR:7 },
-  { state:'Rhode Island', abbr:'RI', office:'Senate', incumbent:'Sheldon Whitehouse (D)', party:'D', ratingRaw:'safe-d', ratingLabel:'Safe Dem', open:false, pviBias:-16, notes:'Solidly blue', polls:[], winD:97, winR:3 },
-  { state:'Vermont', abbr:'VT', office:'Senate', incumbent:'Bernie Sanders (I/D)', party:'D', ratingRaw:'safe-d', ratingLabel:'Safe Dem', open:false, pviBias:-14, notes:'Sanders caucuses with Dems; third term likely', polls:[], winD:94, winR:6 },
-  // LIKELY DEM
-  { state:'Maryland', abbr:'MD', office:'Senate', incumbent:'Angela Alsobrooks (D)', party:'D', ratingRaw:'likely-d', ratingLabel:'Likely Dem', open:false, pviBias:-14, notes:'First-term Dem in solidly blue state', polls:[], winD:90, winR:10 },
-  { state:'Minnesota', abbr:'MN', office:'Senate', incumbent:'Tina Smith (D) → Open', party:'D', ratingRaw:'likely-d', ratingLabel:'Likely Dem', open:true, pviBias:-7, notes:'Smith retiring; D+7 state but competitive open seat', polls:[{src:'MN Poll Jan',d:47,r:41,date:'Jan 26'}], winD:82, winR:18 },
-  { state:'Virginia', abbr:'VA', office:'Senate', incumbent:'Mark Warner (D)', party:'D', ratingRaw:'likely-d', ratingLabel:'Likely Dem', open:false, pviBias:-8, notes:'Warner in strong position; state trending blue', polls:[], winD:85, winR:15 },
-  // LEAN DEM
-  { state:'Georgia', abbr:'GA', office:'Senate', incumbent:'Jon Ossoff (D)', party:'D', ratingRaw:'lean-d', ratingLabel:'Lean Dem', open:false, pviBias:3, notes:'Upgraded Toss-Up→Lean D by Sabato Jan 29; first-term Dem in Trump+2.1 state', polls:[{src:'Emerson Jan',d:46,r:44,date:'Jan 25'}], winD:62, winR:38 },
-  { state:'New Hampshire', abbr:'NH', office:'Senate', incumbent:'Jeanne Shaheen (D) → Open', party:'D', ratingRaw:'lean-d', ratingLabel:'Lean Dem', open:true, pviBias:-1, notes:'Shaheen retiring; battleground · Harris+2.8 · competitive open seat', polls:[{src:'UNH Poll Jan',d:43,r:40,date:'Jan 20'}], winD:60, winR:40 },
-  // TOSS-UP
-  { state:'Michigan', abbr:'MI', office:'Senate', incumbent:'Open (Peters D retiring)', party:'D', ratingRaw:'toss', ratingLabel:'Toss-Up', open:true, pviBias:1, notes:'Peters retiring; Trump+1.4 state; D primary: McMorrow, Stevens, El-Sayed; R: Rogers frontrunner', polls:[{src:'EPIC-MRA Feb',d:44,r:43,date:'Feb 10'},{src:'Target Insyght Jan',d:41,r:42,date:'Jan 15'}], winD:50, winR:50 },
-  { state:'North Carolina', abbr:'NC', office:'Senate', incumbent:'Thom Tillis (R)', party:'R', ratingRaw:'toss', ratingLabel:'Toss-Up', open:false, pviBias:3, notes:'Tillis (R) incumbent in Trump+3.3 state; Cooper (D) considering entering; was Toss-Up even before Sabato Feb update', polls:[{src:'Emerson Jan',d:44,r:43,date:'Jan 20'}], winD:48, winR:52 },
-  { state:'Alaska', abbr:'AK', office:'Senate', incumbent:'Dan Sullivan (R)', party:'R', ratingRaw:'toss', ratingLabel:'Lean Rep', open:false, pviBias:13, notes:'Downgraded Safe→Lean R by Sabato/Cook Jan 12; Peltola (D) entered race; ranked choice voting', polls:[], winD:36, winR:64 },
-  { state:'Maine', abbr:'ME', office:'Senate', incumbent:'Susan Collins (R)', party:'R', ratingRaw:'toss', ratingLabel:'Lean Rep', open:false, pviBias:-7, notes:'Only R in Harris-won state (D+6.9); Gov. Janet Mills (D) running; most vulnerable R incumbent', polls:[{src:'Pan Atlantic Feb',d:46,r:47,date:'Feb 12'}], winD:44, winR:56 },
-  // LEAN REP
-  { state:'Arizona', abbr:'AZ', office:'Senate', incumbent:'Ruben Gallego (D)', party:'D', ratingRaw:'lean-r', ratingLabel:'Lean Rep', open:false, pviBias:5, notes:'First-term Dem in competitive state; Trump+5.6 2024; Latino vote key', polls:[{src:'AZ Wins Jan',d:45,r:47,date:'Jan 22'}], winD:42, winR:58 },
-  { state:'Nevada', abbr:'NV', office:'Senate', incumbent:'Jacky Rosen (D)', party:'D', ratingRaw:'lean-r', ratingLabel:'Lean Rep', open:false, pviBias:3, notes:'Trump+3.1 2024; Hispanic vote swing critical post-Venezuela', polls:[{src:'Nevada Independent Jan',d:44,r:47,date:'Jan 18'}], winD:44, winR:56 },
-  { state:'Wisconsin', abbr:'WI', office:'Senate', incumbent:'Tammy Baldwin (D)', party:'D', ratingRaw:'lean-r', ratingLabel:'Lean Dem', open:false, pviBias:2, notes:'Baldwin perennial overperformer; Trump+0.9 2024; competitive environment', polls:[{src:'Marquette Jan',d:47,r:45,date:'Jan 26'}], winD:55, winR:45 },
-  // LIKELY REP / SAFE REP
-  { state:'Ohio', abbr:'OH', office:'Senate (Special)', incumbent:'Jon Husted (R, appt.)', party:'R', ratingRaw:'lean-r', ratingLabel:'Lean Rep', open:false, pviBias:11, notes:'Special election · Husted appointed after Vance became VP · Brown (D) running to reclaim seat · Trump+11 state', polls:[{src:'Ohio Poll Feb',d:40,r:48,date:'Feb 5'}], winD:35, winR:65 },
-  { state:'Florida', abbr:'FL', office:'Senate (Special)', incumbent:'Ashley Moody (R, appt.)', party:'R', ratingRaw:'likely-r', ratingLabel:'Likely Rep', open:false, pviBias:13, notes:'Special election · Moody appointed · Trump+13 · downgraded from Safe to Likely R by Sabato Jan 29', polls:[], winD:22, winR:78 },
-  { state:'Texas', abbr:'TX', office:'Senate', incumbent:'John Cornyn (R)', party:'R', ratingRaw:'likely-r', ratingLabel:'Likely Rep', open:false, pviBias:14, notes:'Cornyn strong favorite; Trump+13.6 2024; Ballotpedia battleground due to large Dem base', polls:[], winD:25, winR:75 },
-  { state:'Nebraska', abbr:'NE', office:'Senate', incumbent:'Pete Ricketts (R)', party:'R', ratingRaw:'likely-r', ratingLabel:'Likely Rep', open:false, pviBias:20, notes:'Trump+20.3 2024; Ballotpedia lists as battleground; no strong D challenger declared', polls:[], winD:18, winR:82 },
-  { state:'Alabama', abbr:'AL', office:'Senate', incumbent:'Tommy Tuberville (R)', party:'R', ratingRaw:'safe-r', ratingLabel:'Safe Rep', open:false, pviBias:22, notes:'Deep red; safe', polls:[], winD:5, winR:95 },
-  { state:'Arkansas', abbr:'AR', office:'Senate', incumbent:'Tom Cotton (R)', party:'R', ratingRaw:'safe-r', ratingLabel:'Safe Rep', open:false, pviBias:24, notes:'Safe Republican', polls:[], winD:5, winR:95 },
-  { state:'Idaho', abbr:'ID', office:'Senate', incumbent:'Mike Crapo (R)', party:'R', ratingRaw:'safe-r', ratingLabel:'Safe Rep', open:false, pviBias:26, notes:'Deep red; no contest', polls:[], winD:4, winR:96 },
-  { state:'Iowa', abbr:'IA', office:'Senate', incumbent:'Joni Ernst (R)', party:'R', ratingRaw:'safe-r', ratingLabel:'Safe Rep', open:false, pviBias:15, notes:'Sabato: would still be Likely R if retired; safe in current environment', polls:[], winD:15, winR:85 },
-  { state:'Kansas', abbr:'KS', office:'Senate', incumbent:'Jerry Moran (R)', party:'R', ratingRaw:'safe-r', ratingLabel:'Safe Rep', open:false, pviBias:21, notes:'Safe red', polls:[], winD:5, winR:95 },
-  { state:'Kentucky', abbr:'KY', office:'Senate', incumbent:'Mitch McConnell (R)', party:'R', ratingRaw:'safe-r', ratingLabel:'Safe Rep', open:false, pviBias:25, notes:'McConnell health concerns irrelevant to electoral safety', polls:[], winD:5, winR:95 },
-  { state:'Louisiana', abbr:'LA', office:'Senate', incumbent:'Bill Cassidy (R)', party:'R', ratingRaw:'safe-r', ratingLabel:'Safe Rep', open:false, pviBias:22, notes:'Deep red; Cook update Feb 5', polls:[], winD:6, winR:94 },
-  { state:'Mississippi', abbr:'MS', office:'Senate', incumbent:'Cindy Hyde-Smith (R)', party:'R', ratingRaw:'safe-r', ratingLabel:'Safe Rep', open:false, pviBias:20, notes:'Solid R; no competition', polls:[], winD:5, winR:95 },
-  { state:'Oklahoma', abbr:'OK', office:'Senate', incumbent:'James Lankford (R)', party:'R', ratingRaw:'safe-r', ratingLabel:'Safe Rep', open:false, pviBias:24, notes:'Safe R', polls:[], winD:4, winR:96 },
-  { state:'South Carolina', abbr:'SC', office:'Senate', incumbent:'Lindsey Graham (R)', party:'R', ratingRaw:'safe-r', ratingLabel:'Safe Rep', open:false, pviBias:17, notes:'Graham safe in Trump-era SC', polls:[], winD:10, winR:90 },
-  { state:'South Dakota', abbr:'SD', office:'Senate', incumbent:'John Thune (R)', party:'R', ratingRaw:'safe-r', ratingLabel:'Safe Rep', open:false, pviBias:22, notes:'Thune safe as new Majority Leader', polls:[], winD:6, winR:94 },
-  { state:'Tennessee', abbr:'TN', office:'Senate', incumbent:'Open (Blackburn R)', party:'R', ratingRaw:'safe-r', ratingLabel:'Safe Rep', open:true, pviBias:22, notes:'Blackburn not seeking re-election; deep red open seat', polls:[], winD:6, winR:94 },
-  { state:'West Virginia', abbr:'WV', office:'Senate', incumbent:'Jim Justice (R)', party:'R', ratingRaw:'safe-r', ratingLabel:'Safe Rep', open:false, pviBias:29, notes:'Trump+39 in 2024; not competitive', polls:[], winD:3, winR:97 },
-  { state:'Wyoming', abbr:'WY', office:'Senate', incumbent:'John Barrasso (R)', party:'R', ratingRaw:'safe-r', ratingLabel:'Safe Rep', open:false, pviBias:40, notes:'Safest R seat in the nation', polls:[], winD:2, winR:98 },
-];
-
-const HOUSE_RACES = [
-  // TOSS-UPS
-  { state:'New York', abbr:'NY', district:'NY-17', incumbent:'Mike Lawler (R)', party:'R', ratingRaw:'toss', ratingLabel:'Toss-Up', open:false, pviBias:-1, notes:'Harris+2 district; Lawler running for Senate? Cook moved Lean R → Toss-Up Jan 15', polls:[{src:'NRCC internal',d:46,r:47,date:'Jan 10'},{src:'Siena Jan',d:48,r:46,date:'Jan 22'}], winD:51, winR:49 },
-  { state:'New York', abbr:'NY', district:'NY-04', incumbent:'Laura Gillen (D)', party:'D', ratingRaw:'lean-d', ratingLabel:'Lean Dem', open:false, pviBias:-1, notes:'Gillen flipped in 2024 by 2.3pts; Biden+15 → Harris+1; Cook moved Toss-Up → Lean D Jan 15', polls:[], winD:58, winR:42 },
-  { state:'Iowa', abbr:'IA', district:'IA-03', incumbent:'Zach Nunn (R)', party:'R', ratingRaw:'toss', ratingLabel:'Toss-Up', open:false, pviBias:4, notes:'Cook moved Lean R → Toss-Up Jan 15; competitive suburban Des Moines', polls:[], winD:49, winR:51 },
-  { state:'New York', abbr:'NY', district:'NY-17', incumbent:'Mike Lawler (R)', party:'R', ratingRaw:'toss', ratingLabel:'Toss-Up', open:false, pviBias:-1, notes:'Cook Jan 15 move; Harris+2 district; possible Lawler Senate run creates open seat dynamic', polls:[{src:'Siena Feb',d:47,r:46,date:'Feb 18'}], winD:52, winR:48 },
-  { state:'Ohio', abbr:'OH', district:'OH-09', incumbent:'Marcy Kaptur (D)', party:'D', ratingRaw:'toss', ratingLabel:'Toss-Up', open:false, pviBias:10, notes:'Cook Jan 15 Lean R → Toss-Up; Trump+14 district; Kaptur is perennial survivor but district gets tougher', polls:[], winD:46, winR:54 },
-  { state:'Texas', abbr:'TX', district:'TX-34', incumbent:'Vicente Gonzalez (D)', party:'D', ratingRaw:'toss', ratingLabel:'Toss-Up', open:false, pviBias:8, notes:'Cook Jan 15 Lean R → Toss-Up; Hispanic district in Rio Grande Valley; Trump+5 in 2024', polls:[], winD:47, winR:53 },
-  { state:'Colorado', abbr:'CO', district:'CO-08', incumbent:'Gabe Evans (R)', party:'R', ratingRaw:'toss', ratingLabel:'Toss-Up', open:false, pviBias:-1, notes:'Evans won Biden+6 district by just 1pt in 2024; DCCC primary target', polls:[], winD:53, winR:47 },
-  { state:'New Jersey', abbr:'NJ', district:'NJ-07', incumbent:'Thomas Kean Jr. (R)', party:'R', ratingRaw:'toss', ratingLabel:'Toss-Up', open:false, pviBias:-2, notes:'Kean won narrow \'22; Biden+1 district; consistently competitive', polls:[{src:'Monmouth Jan',d:45,r:44,date:'Jan 28'}], winD:53, winR:47 },
-  { state:'Pennsylvania', abbr:'PA', district:'PA-07', incumbent:'Ryan Mackenzie (R)', party:'R', ratingRaw:'toss', ratingLabel:'Toss-Up', open:false, pviBias:2, notes:'DCCC target; competitive Lehigh Valley district; Mackenzie freshman', polls:[], winD:50, winR:50 },
-  { state:'Pennsylvania', abbr:'PA', district:'PA-08', incumbent:'Rob Bresnahan (R)', party:'R', ratingRaw:'toss', ratingLabel:'Toss-Up', open:false, pviBias:6, notes:'Freshman R in Trump+11 district; Dem target but challenging', polls:[], winD:43, winR:57 },
-  { state:'Michigan', abbr:'MI', district:'MI-07', incumbent:'Tom Barrett (R)', party:'R', ratingRaw:'toss', ratingLabel:'Toss-Up', open:false, pviBias:3, notes:'Freshman R; DCCC target; competitive greater Lansing area', polls:[], winD:49, winR:51 },
-  { state:'California', abbr:'CA', district:'CA-13', incumbent:'Adam Gray (D)', party:'D', ratingRaw:'lean-d', ratingLabel:'Lean Dem', open:false, pviBias:4, notes:'Gray won Trump+6 district by ~1pt; Cook moved Toss-Up → Lean D Jan 15 · vulnerable', polls:[], winD:56, winR:44 },
-  { state:'Wisconsin', abbr:'WI', district:'WI-03', incumbent:'Derrick Van Orden (R)', party:'R', ratingRaw:'toss', ratingLabel:'Toss-Up', open:false, pviBias:4, notes:'DCCC target; Trump+4 district; Van Orden won narrowly in 2024', polls:[], winD:49, winR:51 },
-  { state:'Virginia', abbr:'VA', district:'VA-02', incumbent:'Jen Kiggans (R)', party:'R', ratingRaw:'toss', ratingLabel:'Lean Rep', open:false, pviBias:4, notes:'Virginia Beach area; Kiggans freshman; DCCC target', polls:[], winD:44, winR:56 },
-  { state:'Virginia', abbr:'VA', district:'VA-07', incumbent:'Eugene Vindman (D)', party:'D', ratingRaw:'toss', ratingLabel:'Toss-Up', open:false, pviBias:-1, notes:'NRCC target; competitive Northern Virginia suburbs', polls:[], winD:53, winR:47 },
-  { state:'Washington', abbr:'WA', district:'WA-03', incumbent:'Marie Gluesenkamp Perez (D)', party:'D', ratingRaw:'lean-r', ratingLabel:'Lean Rep', open:false, pviBias:7, notes:'MGP won Trump+6 district in 2022/24; strong incumbent advantage but tight', polls:[], winD:44, winR:56 },
-  { state:'Nebraska', abbr:'NE', district:'NE-02', incumbent:'Open (Bacon R retired)', party:'R', ratingRaw:'lean-d', ratingLabel:'Lean Dem', open:true, pviBias:-1, notes:'Bacon retired; Biden+1 district; Cook Lean Dem pickup for Democrats', polls:[], winD:62, winR:38 },
-  { state:'Iowa', abbr:'IA', district:'IA-01', incumbent:'Mariannette Miller-Meeks (R)', party:'R', ratingRaw:'toss', ratingLabel:'Lean Rep', open:false, pviBias:6, notes:'DCCC target; competitive eastern Iowa; won by ~2pt margin in 2024', polls:[], winD:44, winR:56 },
-  // LEAN DEM
-  { state:'New York', abbr:'NY', district:'NY-03', incumbent:'Tom Suozzi (D)', party:'D', ratingRaw:'lean-d', ratingLabel:'Lean Dem', open:false, pviBias:-3, notes:'Nassau-Queens; NRCC target but Suozzi won twice; solid D lean', polls:[], winD:62, winR:38 },
-  { state:'New York', abbr:'NY', district:'NY-19', incumbent:'Josh Riley (D)', party:'D', ratingRaw:'lean-d', ratingLabel:'Lean Dem', open:false, pviBias:1, notes:'Riley won \'24 rematch vs Molinaro; NRCC targets but improving D lean', polls:[], winD:59, winR:41 },
-  { state:'California', abbr:'CA', district:'CA-27', incumbent:'George Whitesides (D)', party:'D', ratingRaw:'lean-d', ratingLabel:'Lean Dem', open:false, pviBias:-2, notes:'NRCC target; Whitesides won tight \'24 race in Antelope Valley', polls:[], winD:60, winR:40 },
-  { state:'California', abbr:'CA', district:'CA-45', incumbent:'Derek Tran (D)', party:'D', ratingRaw:'lean-d', ratingLabel:'Lean Dem', open:false, pviBias:-3, notes:'NRCC target; Tran flipped OC seat in 2024 by ~1pt; Vietnamese-American community key', polls:[], winD:58, winR:42 },
-  { state:'Nevada', abbr:'NV', district:'NV-03', incumbent:'Susie Lee (D)', party:'D', ratingRaw:'lean-d', ratingLabel:'Lean Dem', open:false, pviBias:2, notes:'Lee perennial NRCC target; competitive Las Vegas suburbs', polls:[], winD:58, winR:42 },
-  { state:'Nevada', abbr:'NV', district:'NV-04', incumbent:'Steven Horsford (D)', party:'D', ratingRaw:'lean-d', ratingLabel:'Lean Dem', open:false, pviBias:1, notes:'NRCC target; North Las Vegas / Clark County; competitive', polls:[], winD:57, winR:43 },
-  { state:'North Carolina', abbr:'NC', district:'NC-01', incumbent:'Don Davis (D)', party:'D', ratingRaw:'lean-d', ratingLabel:'Lean Dem', open:false, pviBias:5, notes:'NRCC target; Davis won Trump district; competitive eastern NC', polls:[], winD:55, winR:45 },
-  { state:'Texas', abbr:'TX', district:'TX-28', incumbent:'Henry Cuellar (D)', party:'D', ratingRaw:'lean-d', ratingLabel:'Lean Dem', open:false, pviBias:5, notes:'Sabato moved to slightly better D position; Cuellar ongoing legal issues but incumbency strong', polls:[], winD:56, winR:44 },
-  // LEAN REP
-  { state:'California', abbr:'CA', district:'CA-22', incumbent:'David Valadao (R)', party:'R', ratingRaw:'lean-r', ratingLabel:'Lean Rep', open:false, pviBias:5, notes:'Valadao pro-impeachment R; won in Biden+11 district; perennial target; hardest R to beat', polls:[], winD:45, winR:55 },
-  { state:'Pennsylvania', abbr:'PA', district:'PA-01', incumbent:'Brian Fitzpatrick (R)', party:'R', ratingRaw:'lean-r', ratingLabel:'Lean Rep', open:false, pviBias:-2, notes:'Bucks County; Fitzpatrick bipartisan brand; DCCC target; competitive', polls:[], winD:46, winR:54 },
-  { state:'Florida', abbr:'FL', district:'FL-27', incumbent:'Maria Elvira Salazar (R)', party:'R', ratingRaw:'lean-r', ratingLabel:'Lean Rep', open:false, pviBias:1, notes:'Miami-Dade; DCCC target; Hispanic swing key; Venezuela foreign policy angle', polls:[], winD:47, winR:53 },
-  { state:'Florida', abbr:'FL', district:'FL-13', incumbent:'Anna Paulina Luna (R)', party:'R', ratingRaw:'lean-r', ratingLabel:'Lean Rep', open:false, pviBias:2, notes:'Pinellas County; Luna won \'24; DCCC target', polls:[], winD:44, winR:56 },
-  { state:'Arizona', abbr:'AZ', district:'AZ-06', incumbent:'Juan Ciscomani (R)', party:'R', ratingRaw:'lean-r', ratingLabel:'Lean Rep', open:false, pviBias:4, notes:'Tucson-area; Ciscomani won tight \'24 race; DCCC target', polls:[], winD:45, winR:55 },
-  { state:'Colorado', abbr:'CO', district:'CO-03', incumbent:'Jeff Hurd (R)', party:'R', ratingRaw:'lean-r', ratingLabel:'Lean Rep', open:false, pviBias:14, notes:'Hurd in deep-red western CO district; DCCC target partly due to moderate Hurd backlash from base', polls:[], winD:35, winR:65 },
-  { state:'Michigan', abbr:'MI', district:'MI-04', incumbent:'Bill Huizenga (R)', party:'R', ratingRaw:'lean-r', ratingLabel:'Lean Rep', open:false, pviBias:8, notes:'DCCC target; western Michigan; Huizenga re-elected but district trending', polls:[], winD:40, winR:60 },
-  { state:'Ohio', abbr:'OH', district:'OH-07', incumbent:'Max Miller (R)', party:'R', ratingRaw:'lean-r', ratingLabel:'Lean Rep', open:false, pviBias:14, notes:'DCCC target; Trump+18; challenging for Dems but on list', polls:[], winD:30, winR:70 },
-  { state:'Tennessee', abbr:'TN', district:'TN-05', incumbent:'Andy Ogles (R)', party:'R', ratingRaw:'lean-r', ratingLabel:'Lean Rep', open:false, pviBias:8, notes:'Cook moved Safe → Likely R; Nashville suburbs; Ogles controversial', polls:[], winD:36, winR:64 },
-  { state:'Alaska', abbr:'AK', district:'AK-AL', incumbent:'Nick Begich III (R)', party:'R', ratingRaw:'lean-r', ratingLabel:'Lean Rep', open:false, pviBias:13, notes:'DCCC target; Peltola (D) lost in 2024; ranked-choice dynamics', polls:[], winD:38, winR:62 },
-  { state:'Maine', abbr:'ME', district:'ME-02', incumbent:'Open (Golden D retired)', party:'D', ratingRaw:'lean-r', ratingLabel:'Lean Rep', open:true, pviBias:8, notes:'Golden (D) not running; Trump+6 district; DCCC defending but challenging', polls:[], winD:40, winR:60 },
-];
-
-// ===================== BIAS STATE =====================
-let biasAdj = { gb: 0.8, trump: 1.5, enthus: 1.2, mid: 1.0 };
-
-function getAdjWinProb(race, chamber) {
-  let baseD = race.winD;
-  let totalAdj = 0;
-  // Generic ballot adjustment (all races)
-  totalAdj += biasAdj.gb * 1.5;
-  // Trump state penalty for R-leaning states
-  if (race.pviBias > 5) totalAdj -= (biasAdj.trump * 0.8);
-  // Enthusiasm premium
-  totalAdj += biasAdj.enthus * 0.8;
-  // Midterm weight (higher = more Dem-favorable in midterms)
-  totalAdj *= biasAdj.mid;
-
-  let adjD = Math.max(2, Math.min(98, baseD + totalAdj));
-  return { d: Math.round(adjD), r: Math.round(100 - adjD) };
-}
-
-function getAdjPollMargin(poll) {
-  let rawMargin = poll.d - poll.r;
-  let adj = biasAdj.gb - 0.8; // adjustment relative to default
-  return rawMargin + adj;
-}
-
-function updateBias() {
-  const gb = parseFloat(document.getElementById('gb-adj').value);
-  const trump = parseFloat(document.getElementById('trump-adj').value);
-  const enthus = parseFloat(document.getElementById('enthus-adj').value);
-  const mid = parseFloat(document.getElementById('mid-adj').value);
-
-  document.getElementById('gb-adj-val').textContent = gb >= 0 ? `D+${gb}` : `R+${Math.abs(gb)}`;
-  document.getElementById('trump-adj-val').textContent = trump >= 0 ? `R+${trump}` : `D+${Math.abs(trump)}`;
-  document.getElementById('enthus-adj-val').textContent = enthus >= 0 ? `D+${enthus}` : `R+${Math.abs(enthus)}`;
-  document.getElementById('mid-adj-val').textContent = `×${mid.toFixed(1)}`;
-
-  const summaryVal = gb;
-  document.getElementById('bias-summary').textContent = summaryVal >= 0 ? `D+${summaryVal}` : `R+${Math.abs(summaryVal)}`;
-
-  biasAdj = { gb, trump, enthus, mid };
-
-  // Re-render race lists
-  renderSenateRaces(currentSenateFilter, document.getElementById('senate-search').value);
-  renderHouseRaces(currentHouseFilter, document.getElementById('house-search').value);
-}
-
-// ===================== RENDERING =====================
-
-const RATING_ORDER = ['safe-d','likely-d','lean-d','toss','lean-r','likely-r','safe-r'];
-
-function ratingClass(r) { return `rc-${r}`; }
-function ratingPillClass(r) { return `rp-${r}`; }
-function ratingValClass(r) { return `rv-${r}`; }
-function winBarClass(r) { return r.startsWith('safe-d') || r==='likely-d' || r==='lean-d' ? 'wpb-d' : 'wpb-r'; }
-
-function buildPollRows(polls, race) {
-  if (!polls || polls.length === 0) return `<div class="no-polls-msg">NO STATE-LEVEL POLLING AVAILABLE YET</div>`;
-  return polls.map(p => {
-    const margin = p.d - p.r;
-    const adjMargin = getAdjPollMargin(p);
-    const adjDiff = (adjMargin - margin).toFixed(1);
-    const adjStr = adjDiff > 0 ? `ADJ D+${Math.abs(adjDiff)}` : adjDiff < 0 ? `ADJ R+${Math.abs(adjDiff)}` : 'NO ADJ';
-    const adjClass = adjDiff > 0 ? 'adj-d' : adjDiff < 0 ? 'adj-r' : 'adj-none';
-    const dWidth = Math.round((p.d / (p.d + p.r)) * 100);
-    return `
-      <div class="poll-row">
-        <span class="poll-source-name">${p.src}</span>
-        <span class="poll-d-num">${p.d}%</span>
-        <div class="poll-bar-mini"><div class="pbm-d" style="width:${dWidth}%"></div><div class="pbm-r"></div></div>
-        <span class="poll-r-num">${p.r}%</span>
-        <span class="poll-adj ${adjClass}">${adjStr}</span>
-        <span class="poll-date">${p.date}</span>
-      </div>`;
-  }).join('');
-}
-
-function buildRaceCard(race, chamber) {
-  const adj = getAdjWinProb(race, chamber);
-  const dWidth = adj.d;
-  const incLabel = race.open ? 'OPEN SEAT' : (race.party === 'D' ? 'D INC' : 'R INC');
-  const incClass = race.open ? 'ib-open' : (race.party === 'D' ? 'ib-d' : 'ib-r');
-  const distLabel = chamber === 'senate' ? `${race.state} ${race.state === 'Ohio' || race.state === 'Florida' ? '(Special)' : ''}` : race.district;
-  const officeLabel = chamber === 'senate' ? 'U.S. SENATE' : `U.S. HOUSE · ${race.state}`;
-  const hasChanged = Math.abs(adj.d - race.winD) > 0.5;
-  const biasNote = hasChanged ? `Bias-adj: was D ${race.winD}% → now D ${adj.d}%` : '';
-
-  return `
-<div class="race-card ${ratingClass(race.ratingRaw)}" data-rating="${race.ratingRaw}" data-state="${(race.state||'').toLowerCase()}" data-district="${(race.district||'').toLowerCase()}" data-incumbent="${(race.incumbent||'').toLowerCase()}">
-  <div class="race-top">
-    <div style="flex:1;">
-      <div class="race-office">${officeLabel}</div>
-      <div class="race-title">${distLabel} <span class="inc-badge ${incClass}">${incLabel}</span></div>
-      <div class="race-incumbent">${race.incumbent}</div>
-    </div>
-    <div class="race-rating-block">
-      <div class="race-rating-label">RATING</div>
-      <div class="race-rating-val ${ratingValClass(race.ratingRaw)}">${race.ratingLabel}</div>
-    </div>
-  </div>
-
-  <div class="win-prob-row">
-    <span class="win-prob-label">WIN PROB</span>
-    <div class="win-prob-bar">
-      <div class="wpb-d" style="width:${dWidth}%"></div>
-      <div class="wpb-r"></div>
-    </div>
-    <span class="win-prob-nums">
-      <span class="wpn-d">${adj.d}%</span> <span style="color:var(--faint)">·</span> <span class="wpn-r">${adj.r}%</span>
-    </span>
-  </div>
-
-  ${biasNote ? `<div class="bias-adj-note">⚡ ${biasNote}</div>` : ''}
-
-  <div style="font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5;">${race.notes}</div>
-
-  ${race.polls && race.polls.length > 0 ? `
-  <div class="race-polls">
-    <div class="poll-header"><span>STATE POLLING</span><span style="color:var(--warn);font-size:7px;">ADJ = BIAS-CORRECTED</span></div>
-    ${buildPollRows(race.polls, race)}
-  </div>` : `
-  <div class="race-polls">
-    <div class="poll-header"><span>STATE POLLING</span></div>
-    <div class="no-polls-msg">NO STATE-LEVEL POLLING AVAILABLE YET · USING FUNDAMENTALS MODEL</div>
-  </div>`}
-</div>`;
-}
-
-let currentSenateFilter = 'all';
-let currentHouseFilter = 'all';
-
-function groupByState(races) {
-  const groups = {};
-  races.forEach(r => {
-    const key = r.state;
-    if (!groups[key]) groups[key] = [];
-    groups[key].push(r);
-  });
-  return groups;
-}
-
-function renderSenateRaces(filter, search) {
-  currentSenateFilter = filter;
-  let races = [...SENATE_RACES];
-  if (filter !== 'all') {
-    if (filter === 'toss') races = races.filter(r => r.ratingRaw === 'toss');
-    else if (filter === 'lean-d') races = races.filter(r => ['lean-d','likely-d'].includes(r.ratingRaw));
-    else if (filter === 'lean-r') races = races.filter(r => ['lean-r','likely-r'].includes(r.ratingRaw));
-    else if (filter === 'competitive') races = races.filter(r => !['safe-d','safe-r'].includes(r.ratingRaw));
-  }
-  if (search) {
-    const s = search.toLowerCase();
-    races = races.filter(r => r.state.toLowerCase().includes(s) || r.abbr.toLowerCase().includes(s) || (r.incumbent||'').toLowerCase().includes(s));
-  }
-  // Sort by competitiveness
-  races.sort((a,b) => {
-    const tossFirst = ['toss','lean-d','lean-r','likely-d','likely-r','safe-d','safe-r'];
-    return tossFirst.indexOf(a.ratingRaw) - tossFirst.indexOf(b.ratingRaw);
-  });
-  document.getElementById('senate-count').textContent = `${races.length} race${races.length !== 1 ? 's' : ''}`;
-  document.getElementById('senate-races-list').innerHTML = races.map(r => buildRaceCard(r, 'senate')).join('');
-}
-
-function renderHouseRaces(filter, search) {
-  currentHouseFilter = filter;
-  let races = [...HOUSE_RACES];
-  if (filter !== 'all') {
-    if (filter === 'toss') races = races.filter(r => r.ratingRaw === 'toss');
-    else if (filter === 'lean-d') races = races.filter(r => ['lean-d','likely-d'].includes(r.ratingRaw));
-    else if (filter === 'lean-r') races = races.filter(r => ['lean-r','likely-r'].includes(r.ratingRaw));
-  }
-  if (search) {
-    const s = search.toLowerCase();
-    races = races.filter(r => r.state.toLowerCase().includes(s) || (r.district||'').toLowerCase().includes(s) || (r.incumbent||'').toLowerCase().includes(s));
-  }
-  races.sort((a,b) => {
-    const order = ['lean-d','toss','lean-r','likely-r','likely-d'];
-    return order.indexOf(a.ratingRaw) - order.indexOf(b.ratingRaw);
-  });
-  document.getElementById('house-count').textContent = `${races.length} race${races.length !== 1 ? 's' : ''}`;
-  document.getElementById('house-races-list').innerHTML = races.map(r => buildRaceCard(r, 'house')).join('');
-}
-
-function filterRaces(btn, filter, chamber) {
-  const container = btn.closest('.state-filter-bar');
-  container.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  if (chamber === 'senate') renderSenateRaces(filter, document.getElementById('senate-search').value);
-  else renderHouseRaces(filter, document.getElementById('house-search').value);
-}
-
-function searchRaces(val, chamber) {
-  if (chamber === 'senate') renderSenateRaces(currentSenateFilter, val);
-  else renderHouseRaces(currentHouseFilter, val);
-}
-
-// ===================== TAB SWITCHING =====================
-function switchTab(name) {
-  document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
-  document.querySelectorAll('.nav-tab').forEach(function(t) { t.classList.remove('active'); });
-  var target = document.getElementById('tab-' + name);
-  if (target) target.classList.add('active');
-  var navTab = document.querySelector('.nav-tab[data-tab="' + name + '"]');
-  if (navTab) navTab.classList.add('active');
-  if (name === 'races') {
-    var ss = document.getElementById('senate-search');
-    var hs = document.getElementById('house-search');
-    renderSenateRaces(currentSenateFilter, ss ? ss.value : '');
-    renderHouseRaces(currentHouseFilter, hs ? hs.value : '');
-  }
-}
-
-function switchRaceType(type) {
-  document.querySelectorAll('.rtt').forEach(function(t) { t.classList.remove('active'); });
-  document.querySelectorAll('.rtt-content').forEach(function(t) { t.classList.remove('active'); });
-  var rttTarget = document.getElementById('rtt-' + type);
-  if (rttTarget) rttTarget.classList.add('active');
-  document.querySelectorAll('.rtt[data-rtt]').forEach(function(t) {
-    if (t.getAttribute('data-rtt') === type) t.classList.add('active');
-  });
-}
-
-// ===================== INIT =====================
-window.addEventListener('load', () => {
-  renderSenateRaces('all', '');
-  renderHouseRaces('all', '');
-});
-</script>
 </body>
 </html>
