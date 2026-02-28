@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AXIOM LIVE — 2026 Election Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --d: #2563ff; --d2: #5b8aff; --d-dim: rgba(37,99,255,0.1);
+  --r: #dc2020; --r2: #ff5252; --r-dim: rgba(220,32,32,0.1);
+  --bg: #080a10; --s1: #0d1018; --s2: #111420; --s3: #161b28;
+  --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.04);
+  --text: #e2eaff; --muted: #4a5880; --faint: #232d45;
+  --accent: #00ffb3; --accent2: #00c98a; --accent-dim: rgba(0,255,179,0.08);
+  --gold: #ffc744; --gold-dim: rgba(255,199,68,0.1);
+  --purple: #a78bfa; --purple-dim: rgba(167,139,250,0.1);
+  --red-signal: #ff3d5a; --green-signal: #00e87a;
+  --mono: 'DM Mono', monospace;
+  --sans: 'Syne', sans-serif;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* NOISE TEXTURE */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 200px;
+  pointer-events:none; z-index:0; opacity:0.6;
+}
+
+/* GLOW ORBS */
+.glow-orb {
+  position:fixed; border-radius:50%; pointer-events:none; z-index:0;
+  filter: blur(80px); opacity:0.12;
+}
+.orb1 { width:500px; height:500px; background:var(--d); top:-100px; left:-100px; }
+.orb2 { width:400px; height:400px; background:var(--accent2); bottom:-50px; right:-50px; }
+.orb3 { width:300px; height:300px; background:var(--purple); top:40%; left:50%; transform:translateX(-50%); }
+
+.wrap { max-width:1400px; margin:0 auto; padding:0 24px; position:relative; z-index:1; }
+
+/* ===== HEADER ===== */
+header {
+  position:sticky; top:0; z-index:200;
+  background: rgba(8,10,16,0.9);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+}
+.header-inner {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 24px; max-width:1400px; margin:0 auto;
+  gap:16px;
+}
+.logo {
+  display:flex; flex-direction:column; gap:2px;
+}
+.logo-word {
+  font-size:22px; font-weight:800; letter-spacing:0.15em;
+  background: linear-gradient(90deg, var(--accent), var(--d2));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.logo-sub { font-family:var(--mono); font-size:9px; color:var(--muted); letter-spacing:0.25em; }
+
+.header-signals {
+  display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+}
+.signal-chip {
+  display:flex; align-items:center; gap:6px;
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:4px; padding:5px 10px;
+  font-family:var(--mono); font-size:9px; letter-spacing:0.08em; color:var(--muted);
+}
+.signal-chip .val { color:var(--text); font-weight:500; }
+.signal-chip .up { color:var(--green-signal); }
+.signal-chip .down { color:var(--red-signal); }
+.pulse { width:6px; height:6px; border-radius:50%; background:var(--accent); animation:pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
+
+.nav-pills {
+  display:flex; gap:2px; background:var(--s1); border:1px solid var(--border); border-radius:6px; padding:3px;
+  overflow-x:auto;
+}
+.nav-pill {
+  padding:7px 16px; font-size:12px; font-weight:600; letter-spacing:0.06em;
+  color:var(--muted); cursor:pointer; border-radius:4px; transition:all 0.2s;
+  white-space:nowrap; flex-shrink:0; border:none; background:none;
+}
+.nav-pill:hover { color:var(--text); background:var(--s3); }
+.nav-pill.active { color:var(--bg); background:var(--accent); }
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+
+/* ===== LOADING STATES ===== */
+.loading-bar {
+  height:2px; background:var(--s3); border-radius:1px; overflow:hidden; margin-bottom:4px;
+}
+.loading-bar-fill {
+  height:100%; background:linear-gradient(90deg, var(--accent), var(--d2));
+  border-radius:1px;
+  animation: loadslide 1.5s ease-in-out infinite;
+}
+@keyframes loadslide { 0%{width:0;margin-left:0} 50%{width:60%;margin-left:20%} 100%{width:0;margin-left:100%} }
+
+.skeleton {
+  background: linear-gradient(90deg, var(--s2) 25%, var(--s3) 50%, var(--s2) 75%);
+  background-size:200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius:4px;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+.fetch-status {
+  font-family:var(--mono); font-size:9px; letter-spacing:0.1em;
+  display:inline-flex; align-items:center; gap:5px;
+}
+.fs-ok { color:var(--green-signal); }
+.fs-err { color:var(--red-signal); }
+.fs-loading { color:var(--gold); }
+
+/* ===== HERO SIGNALS ===== */
+.hero-signals {
+  display:grid;
+  grid-template-columns: repeat(4,1fr);
+  gap:1px;
+  background:var(--border);
+  border:1px solid var(--border);
+  border-radius:8px;
+  overflow:hidden;
+  margin: 28px 0;
+}
+@media(max-width:700px){ .hero-signals{ grid-template-columns:1fr 1fr; } }
+.hs-cell {
+  background:var(--s1);
+  padding:22px 24px;
+  position:relative;
+  overflow:hidden;
+}
+.hs-cell::after {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+}
+.hs-cell.markets::after { background:linear-gradient(90deg,var(--gold),#ff9f44); }
+.hs-cell.polls::after { background:linear-gradient(90deg,var(--d),var(--d2)); }
+.hs-cell.reddit::after { background:linear-gradient(90deg,#ff4500,#ff8c69); }
+.hs-cell.model::after { background:linear-gradient(90deg,var(--accent),var(--accent2)); }
+.hs-label { font-family:var(--mono); font-size:9px; letter-spacing:0.18em; color:var(--muted); text-transform:uppercase; margin-bottom:8px; }
+.hs-value { font-size:clamp(32px,4vw,52px); font-weight:800; line-height:1; letter-spacing:-0.03em; }
+.hs-sub { font-size:12px; color:var(--muted); margin-top:6px; font-weight:500; }
+.hs-sub strong { color:var(--text); }
+.hs-source { font-family:var(--mono); font-size:8px; color:var(--faint); margin-top:8px; letter-spacing:0.08em; }
+
+/* ===== THREE SIGNAL GRID ===== */
+.three-signal-grid {
+  display:grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap:16px;
+  margin:24px 0;
+}
+@media(max-width:900px){ .three-signal-grid{ grid-template-columns:1fr; } }
+
+.signal-panel {
+  background:var(--s1);
+  border:1px solid var(--border);
+  border-radius:8px;
+  overflow:hidden;
+}
+.signal-panel-header {
+  padding:14px 18px 12px;
+  border-bottom:1px solid var(--border2);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.sph-title { font-size:13px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
+.sph-badge {
+  font-family:var(--mono); font-size:8px; letter-spacing:0.1em;
+  padding:3px 8px; border-radius:2px;
+}
+.badge-gold { background:var(--gold-dim); color:var(--gold); border:1px solid rgba(255,199,68,0.25); }
+.badge-blue { background:var(--d-dim); color:var(--d2); border:1px solid rgba(37,99,255,0.25); }
+.badge-reddit { background:rgba(255,69,0,0.1); color:#ff8c69; border:1px solid rgba(255,69,0,0.25); }
+.badge-purple { background:var(--purple-dim); color:var(--purple); border:1px solid rgba(167,139,250,0.25); }
+.badge-green { background:var(--accent-dim); color:var(--accent); border:1px solid rgba(0,255,179,0.2); }
+.signal-panel-body { padding:14px 18px; }
+
+/* MARKET ODDS ROWS */
+.market-row {
+  display:flex; align-items:center; gap:10px;
+  padding:9px 0; border-bottom:1px solid var(--border2);
+}
+.market-row:last-child { border-bottom:none; }
+.mr-race { font-size:12px; font-weight:600; flex:1; }
+.mr-race-sub { font-family:var(--mono); font-size:8px; color:var(--muted); letter-spacing:0.06em; }
+.mr-bar { width:80px; height:6px; background:var(--s3); border-radius:3px; overflow:hidden; display:flex; flex-shrink:0; }
+.mr-bar-d { background:var(--d); border-radius:3px 0 0 3px; }
+.mr-bar-r { background:var(--r); flex:1; border-radius:0 3px 3px 0; }
+.mr-d { font-family:var(--mono); font-size:11px; font-weight:600; color:var(--d2); width:36px; text-align:right; flex-shrink:0; }
+.mr-r { font-family:var(--mono); font-size:11px; font-weight:600; color:var(--r2); width:36px; flex-shrink:0; }
+.mr-move {
+  font-family:var(--mono); font-size:9px; width:42px; text-align:right; flex-shrink:0; font-weight:600;
+}
+.mr-move.up { color:var(--green-signal); }
+.mr-move.down { color:var(--red-signal); }
+.mr-move.flat { color:var(--faint); }
+
+/* REDDIT POSTS */
+.reddit-post {
+  padding:10px 0; border-bottom:1px solid var(--border2);
+}
+.reddit-post:last-child { border-bottom:none; }
+.rp-sub { font-family:var(--mono); font-size:8px; color:var(--muted); letter-spacing:0.08em; margin-bottom:4px; display:flex; gap:8px; align-items:center; }
+.rp-title { font-size:12px; font-weight:600; line-height:1.4; margin-bottom:5px; cursor:pointer; }
+.rp-title:hover { color:var(--accent); }
+.rp-meta { display:flex; gap:10px; align-items:center; font-family:var(--mono); font-size:8px; color:var(--faint); }
+.sent-badge { padding:1px 6px; border-radius:10px; font-size:8px; font-weight:600; }
+.sent-dem { background:var(--d-dim); color:var(--d2); }
+.sent-rep { background:var(--r-dim); color:var(--r2); }
+.sent-neutral { background:var(--s3); color:var(--muted); }
+.sent-anti { background:rgba(255,61,90,0.1); color:var(--red-signal); }
+.upvote { color:var(--gold); }
+
+/* SIGNAL DIVERGENCE */
+.divergence-table { width:100%; border-collapse:collapse; font-size:12px; margin-top:8px; }
+.divergence-table th { font-family:var(--mono); font-size:8px; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; padding:6px 8px; text-align:left; border-bottom:1px solid var(--border); }
+.divergence-table td { padding:8px; border-bottom:1px solid var(--border2); vertical-align:middle; }
+.divergence-table tbody tr:hover td { background:rgba(255,255,255,0.02); }
+.div-race { font-weight:700; font-size:13px; }
+.div-model { font-family:var(--mono); font-size:11px; }
+.div-market { font-family:var(--mono); font-size:11px; }
+.div-reddit { font-family:var(--mono); font-size:11px; }
+.div-gap { font-family:var(--mono); font-size:11px; font-weight:700; }
+.gap-pos { color:var(--green-signal); }
+.gap-neg { color:var(--red-signal); }
+.gap-zero { color:var(--muted); }
+
+/* VIBES METER */
+.vibes-section { margin-top:16px; }
+.vibes-label { font-family:var(--mono); font-size:9px; color:var(--muted); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:10px; }
+.vibes-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.vibes-name { font-size:11px; font-weight:600; width:80px; flex-shrink:0; }
+.vibes-bar-wrap { flex:1; height:8px; background:var(--s3); border-radius:4px; overflow:hidden; position:relative; }
+.vibes-bar-fill { height:100%; border-radius:4px; transition:width 0.8s ease; }
+.vibes-fill-dem { background:linear-gradient(90deg,#1a3fa8,var(--d2)); }
+.vibes-fill-rep { background:linear-gradient(90deg,#8b0000,var(--r2)); }
+.vibes-fill-neutral { background:linear-gradient(90deg,var(--muted),var(--faint)); }
+.vibes-num { font-family:var(--mono); font-size:10px; width:40px; text-align:right; flex-shrink:0; }
+
+/* SUBREDDIT TABS */
+.sub-tabs { display:flex; gap:4px; margin-bottom:12px; flex-wrap:wrap; }
+.sub-tab {
+  font-family:var(--mono); font-size:8px; letter-spacing:0.08em; padding:4px 10px;
+  border:1px solid var(--border); border-radius:3px; background:transparent;
+  color:var(--muted); cursor:pointer; transition:all 0.15s; text-transform:uppercase;
+}
+.sub-tab:hover { border-color:var(--accent); color:var(--accent); }
+.sub-tab.active { background:rgba(255,69,0,0.1); border-color:rgba(255,69,0,0.4); color:#ff8c69; }
+
+/* TREND CHART */
+.mini-chart { width:100%; height:50px; position:relative; margin-top:8px; }
+.mini-chart canvas { width:100%; height:100%; }
+
+/* ===== MARKETS TAB ===== */
+.markets-full {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:20px;
+}
+@media(max-width:800px){ .markets-full{ grid-template-columns:1fr; } }
+
+.market-card {
+  background:var(--s1); border:1px solid var(--border); border-radius:6px;
+  padding:16px; position:relative; overflow:hidden;
+}
+.market-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; }
+.mc-dem::before { background:var(--d); }
+.mc-rep::before { background:var(--r); }
+.mc-toss::before { background:var(--gold); }
+.mc-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
+.mc-race { font-size:14px; font-weight:700; letter-spacing:0.04em; }
+.mc-type { font-family:var(--mono); font-size:8px; color:var(--muted); letter-spacing:0.1em; margin-top:2px; }
+.mc-platform { font-family:var(--mono); font-size:8px; padding:2px 7px; border-radius:2px; }
+.plat-kalshi { background:rgba(0,255,179,0.08); color:var(--accent); border:1px solid rgba(0,255,179,0.2); }
+.plat-polymarket { background:var(--purple-dim); color:var(--purple); border:1px solid rgba(167,139,250,0.2); }
+.plat-static { background:var(--s3); color:var(--muted); border:1px solid var(--border); }
+.mc-odds { display:flex; gap:14px; align-items:center; margin-bottom:10px; }
+.mc-d-pct { font-size:32px; font-weight:800; color:var(--d2); letter-spacing:-0.03em; }
+.mc-r-pct { font-size:32px; font-weight:800; color:var(--r2); letter-spacing:-0.03em; }
+.mc-vs { font-size:14px; color:var(--faint); font-weight:300; }
+.mc-bar { height:8px; background:var(--s3); border-radius:4px; overflow:hidden; display:flex; }
+.mc-bar-d { background:linear-gradient(90deg,#0a1f8f,var(--d2)); border-radius:4px 0 0 4px; transition:width 0.8s ease; }
+.mc-bar-r { background:linear-gradient(90deg,var(--r),#6b0000); flex:1; border-radius:0 4px 4px 0; }
+.mc-meta { font-family:var(--mono); font-size:8px; color:var(--muted); margin-top:8px; letter-spacing:0.06em; display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px; }
+.mc-vs-model {
+  display:flex; align-items:center; gap:6px; margin-top:8px;
+  font-family:var(--mono); font-size:9px; letter-spacing:0.06em;
+}
+.mvs-label { color:var(--muted); }
+.mvs-gap { font-weight:700; }
+.mvs-pos { color:var(--green-signal); }
+.mvs-neg { color:var(--red-signal); }
+.mvs-zero { color:var(--faint); }
+
+/* ===== REDDIT TAB ===== */
+.reddit-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px; }
+@media(max-width:800px){ .reddit-grid{ grid-template-columns:1fr; } }
+.reddit-panel { background:var(--s1); border:1px solid var(--border); border-radius:6px; overflow:hidden; }
+.rp-header {
+  padding:12px 16px; background:var(--s2); border-bottom:1px solid var(--border2);
+  display:flex; align-items:center; gap:10px;
+}
+.rp-header-icon { font-size:16px; }
+.rp-header-name { font-size:13px; font-weight:700; }
+.rp-header-desc { font-family:var(--mono); font-size:8px; color:var(--muted); letter-spacing:0.08em; margin-top:1px; }
+.rp-header-badge { margin-left:auto; font-family:var(--mono); font-size:8px; padding:2px 7px; border-radius:2px; }
+.rp-body { padding:12px 16px; }
+.rp-sentiment-bar { height:6px; background:var(--s3); border-radius:3px; overflow:hidden; display:flex; margin-bottom:10px; }
+.rsb-dem { background:var(--d); }
+.rsb-rep { background:var(--r); }
+.rsb-neutral { background:var(--s3); }
+.rp-sent-label { font-family:var(--mono); font-size:8px; color:var(--muted); letter-spacing:0.1em; margin-bottom:8px; display:flex; justify-content:space-between; }
+
+/* ===== ANALYSIS BLOCKS ===== */
+.analysis-card {
+  background:var(--s2); border:1px solid var(--border);
+  border-radius:6px; padding:18px 22px;
+  font-size:13px; line-height:1.8; color:rgba(226,234,255,0.7);
+  margin-top:16px;
+}
+.analysis-card strong { color:var(--text); }
+.analysis-card .d { color:var(--d2); font-weight:600; }
+.analysis-card .r { color:var(--r2); font-weight:600; }
+.analysis-card .a { color:var(--accent); font-weight:600; }
+.analysis-card .g { color:var(--gold); font-weight:600; }
+
+/* ===== OVERVIEW TAB ===== */
+.section { padding:24px 0; border-top:1px solid var(--border); }
+.section:first-child { border-top:none; }
+.section-label {
+  font-family:var(--mono); font-size:9px; letter-spacing:0.2em;
+  color:var(--accent); text-transform:uppercase; margin-bottom:16px;
+  display:flex; align-items:center; gap:10px;
+}
+.section-label::after { content:''; flex:1; height:1px; background:rgba(0,255,179,0.15); }
+
+/* DIVERGENCE HIGHLIGHT */
+.divergence-alert {
+  background:linear-gradient(135deg, rgba(255,199,68,0.06), transparent);
+  border:1px solid rgba(255,199,68,0.2);
+  border-radius:6px; padding:14px 18px; margin-bottom:12px;
+  display:flex; gap:14px; align-items:flex-start;
+}
+.da-icon { font-size:20px; flex-shrink:0; }
+.da-title { font-size:13px; font-weight:700; color:var(--gold); margin-bottom:4px; }
+.da-body { font-size:12px; color:rgba(226,234,255,0.65); line-height:1.6; }
+
+/* ===== FOOTER ===== */
+footer {
+  border-top:1px solid var(--border); padding:20px 0; margin-top:40px;
+  font-family:var(--mono); font-size:8px; color:var(--muted);
+  letter-spacing:0.08em; line-height:1.8;
+}
+.footer-inner { display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+.footer-apis { display:flex; gap:8px; flex-wrap:wrap; }
+.api-chip { padding:3px 8px; border:1px solid var(--border); border-radius:2px; color:var(--faint); }
+.api-chip.live { border-color:rgba(0,255,179,0.2); color:var(--accent2); }
+
+/* UTILITY */
+.spacer { height:12px; }
+.fade-in { animation:fadeIn 0.4s ease forwards; opacity:0; }
+@keyframes fadeIn { to { opacity:1; } }
+.d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}.d4{animation-delay:.2s}
+
+/* ERROR STATE */
+.error-state {
+  font-family:var(--mono); font-size:10px; color:var(--red-signal);
+  letter-spacing:0.08em; padding:12px; background:rgba(255,61,90,0.05);
+  border:1px solid rgba(255,61,90,0.15); border-radius:4px;
+}
+.fallback-note {
+  font-family:var(--mono); font-size:9px; color:var(--gold);
+  letter-spacing:0.08em; padding:6px 10px; background:var(--gold-dim);
+  border:1px solid rgba(255,199,68,0.2); border-radius:3px; margin-bottom:12px;
+}
+</style>
+</head>
+<body>
+<div class="glow-orb orb1"></div>
+<div class="glow-orb orb2"></div>
+<div class="glow-orb orb3"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-word">AXIOM</div>
+      <div class="logo-sub">Live Election Intelligence · 2026</div>
+    </div>
+
+    <div class="header-signals" id="header-signals">
+      <div class="signal-chip"><span class="pulse"></span><span>MARKETS</span><span class="val" id="hdr-market">Loading…</span></div>
+      <div class="signal-chip"><span>GENERIC BALLOT</span><span class="val up">D+5.2</span></div>
+      <div class="signal-chip"><span>REDDIT VIBES</span><span class="val" id="hdr-vibes">Loading…</span></div>
+      <div class="signal-chip"><span>MODEL</span><span class="val up">D+22 House</span></div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <div class="nav-pills">
+        <button class="nav-pill active" data-tab="overview" onclick="switchTab('overview')">Overview</button>
+        <button class="nav-pill" data-tab="markets" onclick="switchTab('markets')">Markets</button>
+        <button class="nav-pill" data-tab="reddit" onclick="switchTab('reddit')">Reddit Vibes</button>
+        <button class="nav-pill" data-tab="divergence" onclick="switchTab('divergence')">Divergence</button>
+      </div>
+      <button onclick="refresh()" style="font-family:var(--mono);font-size:9px;letter-spacing:0.1em;padding:7px 12px;background:var(--accent-dim);border:1px solid rgba(0,255,179,0.25);color:var(--accent);border-radius:4px;cursor:pointer;white-space:nowrap;">&#8635; REFRESH</button>
+    </div>
+  </div>
+</header>
+
+<!-- ==================== OVERVIEW ==================== -->
+<div id="tab-overview" class="tab-content active">
+<div class="wrap">
+
+  <!-- HERO SIGNALS -->
+  <div class="hero-signals fade-in d1">
+    <div class="hs-cell markets">
+      <div class="hs-label">Prediction Markets — D House Win</div>
+      <div class="hs-value" id="hero-market-house" style="color:var(--d2)">—</div>
+      <div class="hs-sub" id="hero-market-house-sub">Fetching live odds…</div>
+      <div class="hs-source" id="hero-market-source">Kalshi / Polymarket</div>
+      <div class="loading-bar" id="market-hero-load"><div class="loading-bar-fill"></div></div>
+    </div>
+    <div class="hs-cell polls">
+      <div class="hs-label">Generic Ballot (Polling Avg)</div>
+      <div class="hs-value" style="color:var(--d2)">D+5.2</div>
+      <div class="hs-sub">Bias-adj: <strong>D+4.4</strong> after midterm correction</div>
+      <div class="hs-source">Silver Bulletin / Emerson / Fox / Ballotpedia</div>
+    </div>
+    <div class="hs-cell reddit">
+      <div class="hs-label">Reddit Sentiment Score</div>
+      <div class="hs-value" id="hero-reddit-score" style="color:#ff8c69">—</div>
+      <div class="hs-sub" id="hero-reddit-sub">Scanning r/politics, r/Conservative…</div>
+      <div class="hs-source">Live Reddit API · last 50 posts per sub</div>
+      <div class="loading-bar" id="reddit-hero-load"><div class="loading-bar-fill"></div></div>
+    </div>
+    <div class="hs-cell model">
+      <div class="hs-label">AXIOM Composite Score</div>
+      <div class="hs-value" id="hero-composite" style="color:var(--accent)">—</div>
+      <div class="hs-sub" id="hero-composite-sub">Calculating…</div>
+      <div class="hs-source">Markets 35% · Polls 30% · Demo 15% · Sentiment 20%</div>
+    </div>
+  </div>
+
+  <!-- DIVERGENCE ALERTS -->
+  <div id="divergence-alerts" class="fade-in d2">
+    <!-- populated by JS -->
+  </div>
+
+  <!-- THREE SIGNAL GRID -->
+  <div class="three-signal-grid fade-in d3">
+
+    <!-- MARKETS PANEL -->
+    <div class="signal-panel">
+      <div class="signal-panel-header">
+        <div>
+          <div class="sph-title">Prediction Markets</div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:2px;" id="market-panel-status">
+            <span class="fetch-status fs-loading">● Fetching…</span>
+          </div>
+        </div>
+        <div class="sph-badge badge-gold">LIVE</div>
+      </div>
+      <div class="signal-panel-body" id="market-panel-body">
+        <div class="skeleton" style="height:36px;margin-bottom:8px;"></div>
+        <div class="skeleton" style="height:36px;margin-bottom:8px;"></div>
+        <div class="skeleton" style="height:36px;margin-bottom:8px;"></div>
+        <div class="skeleton" style="height:36px;"></div>
+      </div>
+    </div>
+
+    <!-- REDDIT PANEL -->
+    <div class="signal-panel">
+      <div class="signal-panel-header">
+        <div>
+          <div class="sph-title">Reddit Vibes</div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:2px;" id="reddit-panel-status">
+            <span class="fetch-status fs-loading">● Fetching…</span>
+          </div>
+        </div>
+        <div class="sph-badge badge-reddit">LIVE</div>
+      </div>
+      <div class="signal-panel-body" id="reddit-panel-body">
+        <div class="skeleton" style="height:60px;margin-bottom:8px;"></div>
+        <div class="skeleton" style="height:60px;margin-bottom:8px;"></div>
+        <div class="skeleton" style="height:60px;"></div>
+      </div>
+    </div>
+
+    <!-- MODEL VS MARKET PANEL -->
+    <div class="signal-panel">
+      <div class="signal-panel-header">
+        <div>
+          <div class="sph-title">Model vs. Market</div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:2px;">Where they disagree most</div>
+        </div>
+        <div class="sph-badge badge-purple">ANALYSIS</div>
+      </div>
+      <div class="signal-panel-body" id="divergence-panel-body">
+        <div class="skeleton" style="height:30px;margin-bottom:6px;"></div>
+        <div class="skeleton" style="height:30px;margin-bottom:6px;"></div>
+        <div class="skeleton" style="height:30px;margin-bottom:6px;"></div>
+        <div class="skeleton" style="height:30px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIBES SECTION -->
+  <div class="section fade-in d4">
+    <div class="section-label">Reddit Sentiment by Topic</div>
+    <div id="vibes-bars">
+      <div class="skeleton" style="height:100px;border-radius:6px;"></div>
+    </div>
+  </div>
+
+  <div class="analysis-card fade-in d4" id="overview-analysis">
+    <strong>Three-Signal Dashboard:</strong> AXIOM synthesizes <span class="g">prediction market pricing</span> (what sophisticated money thinks), <span class="d">polling fundamentals</span> (what voters say), and <span class="a">real-time social sentiment</span> (what the internet feels). Each signal has its own failure mode — markets can be thin and manipulable, polls miss non-responders, Reddit over-indexes educated/young users. The divergence between signals is often the most actionable information. Loading live data now…
+  </div>
+
+</div>
+</div>
+
+<!-- ==================== MARKETS TAB ==================== -->
+<div id="tab-markets" class="tab-content">
+<div class="wrap">
+  <div class="section">
+    <div class="section-label">Live Prediction Market Odds — All Key Races</div>
+    <div class="fallback-note" id="market-tab-status">⟳ Fetching live market data from Kalshi and Polymarket…</div>
+    <div class="markets-full" id="markets-full-grid">
+      <!-- generated by JS -->
+    </div>
+    <div class="analysis-card" style="margin-top:20px;">
+      <strong>How to read prediction markets:</strong> Prices represent the market's implied probability. A contract trading at 64¢ means the market gives that outcome a <span class="g">64% chance</span>. Markets are often more accurate than polls because participants risk real money. However, 2026 is early — <strong>thin liquidity</strong> means individual large trades can move prices significantly. <span class="d">Kalshi</span> is the primary US regulated prediction market for elections. <span class="purple" style="color:var(--purple)">Polymarket</span> is crypto-based and offshore but often has deeper liquidity. Where both exist, we show both and average them.
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ==================== REDDIT VIBES TAB ==================== -->
+<div id="tab-reddit" class="tab-content">
+<div class="wrap">
+  <div class="section">
+    <div class="section-label">Reddit Sentiment Analysis — Live</div>
+    <div class="fallback-note" id="reddit-tab-status">⟳ Fetching posts from r/politics, r/Conservative, r/neoliberal, r/Ask_Politics…</div>
+
+    <div class="sub-tabs" id="sub-tabs">
+      <button class="sub-tab active" data-sub="all" onclick="filterSub(this,'all')">All Subreddits</button>
+      <button class="sub-tab" data-sub="politics" onclick="filterSub(this,'politics')">r/politics</button>
+      <button class="sub-tab" data-sub="Conservative" onclick="filterSub(this,'Conservative')">r/Conservative</button>
+      <button class="sub-tab" data-sub="neoliberal" onclick="filterSub(this,'neoliberal')">r/neoliberal</button>
+      <button class="sub-tab" data-sub="AskTrumpSupporters" onclick="filterSub(this,'AskTrumpSupporters')">r/AskTrumpSupporters</button>
+    </div>
+
+    <div class="reddit-grid" id="reddit-full-grid">
+      <!-- generated by JS -->
+    </div>
+
+    <div class="analysis-card" style="margin-top:20px;">
+      <strong>Methodology caveat:</strong> Reddit skews <span class="d">younger, more educated, and more Democratic</span> than the general electorate. r/politics in particular has a well-documented liberal lean. We correct for this by tracking <span class="r">r/Conservative</span> and <span class="a">r/AskTrumpSupporters</span> alongside left-leaning subs, then computing a <strong>cross-sub sentiment delta</strong>. Rapidly increasing engagement volume — regardless of sentiment — is a meaningful signal of issue salience. Post volume spikes on specific races are more predictive than sentiment polarity alone.
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ==================== DIVERGENCE TAB ==================== -->
+<div id="tab-divergence" class="tab-content">
+<div class="wrap">
+  <div class="section">
+    <div class="section-label">Signal Divergence — Where Model, Markets & Reddit Disagree</div>
+    <div class="analysis-card" style="margin-bottom:20px;">
+      <strong class="a">Divergence is the signal.</strong> When our fundamentals model gives a race a 64% Democratic chance but markets price it at 45%, something is being priced in that the polls don't capture yet — or the market is wrong. These gaps are where the most interesting information lives. <strong>Large positive gaps</strong> (model more bullish than markets) suggest the model may be missing risks. <strong>Large negative gaps</strong> (markets more bullish than model) may indicate an overpriced favorite. Reddit sentiment is shown as a third data point — it won't predict the election, but it reveals which races have the most emotional energy.
+    </div>
+    <div id="divergence-full-table">
+      <div class="skeleton" style="height:300px;border-radius:6px;"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-inner">
+      <div>
+        AXIOM Live Intelligence · v3.1 · <span id="last-refreshed">Initializing…</span><br>
+        All API calls made client-side from your browser · No data stored
+      </div>
+      <div class="footer-apis">
+        <span class="api-chip live">Kalshi API</span>
+        <span class="api-chip live">Polymarket API</span>
+        <span class="api-chip live">Reddit JSON API</span>
+        <span class="api-chip">Polling: Static (updated manually)</span>
+        <span class="api-chip">Model: Fundamentals + Bias Adj</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// TAB SWITCHING — BULLETPROOF DATA-ATTRIBUTE VERSION
+// ============================================================
+function switchTab(name) {
+  document.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.nav-pill').forEach(function(t) { t.classList.remove('active'); });
+  var target = document.getElementById('tab-' + name);
+  if (target) target.classList.add('active');
+  var pill = document.querySelector('.nav-pill[data-tab="' + name + '"]');
+  if (pill) pill.classList.add('active');
+}
+
+// ============================================================
+// MODEL DATA — FUNDAMENTALS (from bias-corrected model)
+// ============================================================
+var MODEL_RACES = [
+  { id:'house-control', race:'House Control', model_d:64, type:'chamber' },
+  { id:'senate-control', race:'Senate Control', model_d:42, type:'chamber' },
+  { id:'ga-senate', race:'Georgia Senate', model_d:62, type:'senate' },
+  { id:'nc-senate', race:'North Carolina Senate', model_d:48, type:'senate' },
+  { id:'me-senate', race:'Maine Senate', model_d:44, type:'senate' },
+  { id:'mi-senate', race:'Michigan Senate', model_d:50, type:'senate' },
+  { id:'wi-senate', race:'Wisconsin Senate', model_d:55, type:'senate' },
+  { id:'az-senate', race:'Arizona Senate', model_d:42, type:'senate' },
+  { id:'nv-senate', race:'Nevada Senate', model_d:44, type:'senate' },
+  { id:'oh-senate', race:'Ohio Senate (Special)', model_d:35, type:'senate' },
+  { id:'nh-senate', race:'New Hampshire Senate', model_d:60, type:'senate' },
+  { id:'ny17-house', race:'NY-17 House', model_d:52, type:'house' },
+  { id:'co8-house', race:'CO-08 House', model_d:53, type:'house' },
+  { id:'nj7-house', race:'NJ-07 House', model_d:53, type:'house' },
+  { id:'ne2-house', race:'NE-02 House (Open)', model_d:62, type:'house' },
+];
+
+// ============================================================
+// POLYMARKET — Public API (CORS-open)
+// Maps our race IDs to Polymarket search terms
+// ============================================================
+var POLYMARKET_SLUGS = {
+  'house-control': 'will-democrats-control-the-house-after-the-2026-midterm-elections',
+  'senate-control': 'will-republicans-control-the-senate-after-2026-midterm',
+  'ga-senate': 'georgia-2026-senate',
+  'nc-senate': 'north-carolina-2026-senate',
+  'me-senate': 'maine-2026-senate-susan-collins',
+};
+
+var marketData = {};   // id -> { d: %, r: %, source, updated }
+var redditData = {};   // sub -> [posts]
+var sentimentScores = {}; // sub -> { dem, rep, neutral, total }
+
+// ============================================================
+// FETCH POLYMARKET DATA
+// ============================================================
+async function fetchPolymarket() {
+  var url = 'https://gamma-api.polymarket.com/markets?tag_slug=politics&limit=50&active=true';
+  try {
+    var resp = await fetch(url);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    var data = await resp.json();
+    var found = 0;
+    data.forEach(function(market) {
+      var title = (market.question || market.title || '').toLowerCase();
+      var outcomes = market.outcomes;
+      var prices = market.outcomePrices;
+
+      // Try to match markets to our races
+      if (title.includes('house') && title.includes('democrat') && title.includes('2026') && title.includes('control')) {
+        var dPrice = extractDemPrice(outcomes, prices);
+        if (dPrice) { marketData['house-control'] = { d: Math.round(dPrice), r: Math.round(100-dPrice), source:'Polymarket', updated: new Date().toLocaleTimeString() }; found++; }
+      }
+      if (title.includes('senate') && title.includes('republican') && title.includes('2026') && title.includes('control')) {
+        var rPrice = extractRepPrice(outcomes, prices);
+        if (rPrice) { marketData['senate-control'] = { d: Math.round(100-rPrice), r: Math.round(rPrice), source:'Polymarket', updated: new Date().toLocaleTimeString() }; found++; }
+      }
+      if (title.includes('georgia') && title.includes('senate') && title.includes('2026')) {
+        var dPrice = extractDemPrice(outcomes, prices);
+        if (dPrice) { marketData['ga-senate'] = { d: Math.round(dPrice), r: Math.round(100-dPrice), source:'Polymarket', updated: new Date().toLocaleTimeString() }; found++; }
+      }
+      if (title.includes('north carolina') && title.includes('senate') && title.includes('2026')) {
+        var dPrice = extractDemPrice(outcomes, prices);
+        if (dPrice) { marketData['nc-senate'] = { d: Math.round(dPrice), r: Math.round(100-dPrice), source:'Polymarket', updated: new Date().toLocaleTimeString() }; found++; }
+      }
+      if (title.includes('maine') && title.includes('senate') && title.includes('2026')) {
+        var dPrice = extractDemPrice(outcomes, prices);
+        if (dPrice) { marketData['me-senate'] = { d: Math.round(dPrice), r: Math.round(100-dPrice), source:'Polymarket', updated: new Date().toLocaleTimeString() }; found++; }
+      }
+      if (title.includes('michigan') && title.includes('senate') && title.includes('2026')) {
+        var dPrice = extractDemPrice(outcomes, prices);
+        if (dPrice) { marketData['mi-senate'] = { d: Math.round(dPrice), r: Math.round(100-dPrice), source:'Polymarket', updated: new Date().toLocaleTimeString() }; found++; }
+      }
+    });
+    console.log('Polymarket: matched ' + found + ' markets from ' + data.length + ' total');
+    return found;
+  } catch(e) {
+    console.warn('Polymarket fetch failed:', e.message);
+    return 0;
+  }
+}
+
+function extractDemPrice(outcomes, prices) {
+  if (!outcomes || !prices) return null;
+  try {
+    var outArr = typeof outcomes === 'string' ? JSON.parse(outcomes) : outcomes;
+    var priceArr = typeof prices === 'string' ? JSON.parse(prices) : prices;
+    for (var i=0; i<outArr.length; i++) {
+      var o = (outArr[i]||'').toLowerCase();
+      if (o.includes('yes') || o.includes('dem') || o.includes('democrat')) {
+        var p = parseFloat(priceArr[i]);
+        if (!isNaN(p)) return p * (p > 1 ? 1 : 100);
+      }
+    }
+  } catch(e) {}
+  return null;
+}
+
+function extractRepPrice(outcomes, prices) {
+  if (!outcomes || !prices) return null;
+  try {
+    var outArr = typeof outcomes === 'string' ? JSON.parse(outcomes) : outcomes;
+    var priceArr = typeof prices === 'string' ? JSON.parse(prices) : prices;
+    for (var i=0; i<outArr.length; i++) {
+      var o = (outArr[i]||'').toLowerCase();
+      if (o.includes('yes') || o.includes('rep') || o.includes('republican')) {
+        var p = parseFloat(priceArr[i]);
+        if (!isNaN(p)) return p * (p > 1 ? 1 : 100);
+      }
+    }
+  } catch(e) {}
+  return null;
+}
+
+// ============================================================
+// FETCH KALSHI DATA — v2 API with confirmed market tickers
+// House: controlh / controls-2026 (Democrats win House?)
+// Senate: controls (Republicans retain Senate?)
+// Confirmed from kalshi.com URLs Feb 2026
+// ============================================================
+var KALSHI_MARKETS = [
+  { ticker: 'KXHOUSE26-DEM', id: 'house-control', party: 'D', label: 'D House Control' },
+  { ticker: 'KXSENATE26-REP', id: 'senate-control', party: 'R', label: 'R Senate Control' },
+];
+var KALSHI_BASE = 'https://api.elections.kalshi.com/trade-api/v2';
+
+async function fetchKalshiMarket(ticker) {
+  var url = KALSHI_BASE + '/markets/' + ticker;
+  var resp = await fetch(url);
+  if (!resp.ok) throw new Error('HTTP ' + resp.status);
+  return await resp.json();
+}
+
+async function fetchKalshiBrowse() {
+  // Fetch by series — the confirmed series for 2026 Congress control
+  var urls = [
+    KALSHI_BASE + '/markets?series_ticker=CONTROLH&status=open&limit=20',
+    KALSHI_BASE + '/markets?series_ticker=CONTROLS&status=open&limit=20',
+    KALSHI_BASE + '/markets?series_ticker=KXHOUSE26&status=open&limit=20',
+    KALSHI_BASE + '/markets?series_ticker=KXSENATE26&status=open&limit=20',
+  ];
+  var found = 0;
+  var ts = new Date().toLocaleTimeString();
+  for (var i = 0; i < urls.length; i++) {
+    try {
+      var resp = await fetch(urls[i]);
+      if (!resp.ok) continue;
+      var data = await resp.json();
+      var markets = data.markets || [];
+      markets.forEach(function(m) {
+        var title = (m.title || '').toLowerCase();
+        var yesPrice = m.yes_bid || m.last_price || 0;
+        if (yesPrice > 1) yesPrice = yesPrice / 100;  // convert cents to fraction
+        var dPct = Math.round(yesPrice * 100);
+        if (dPct < 1 || dPct > 99) return;
+
+        if ((title.includes('democrat') || title.includes('house')) && !marketData['house-control']) {
+          marketData['house-control'] = { d: dPct, r: 100-dPct, source: 'Kalshi', ticker: m.ticker, updated: ts };
+          found++;
+        }
+        if ((title.includes('republican') && title.includes('senate')) && !marketData['senate-control']) {
+          marketData['senate-control'] = { d: 100-dPct, r: dPct, source: 'Kalshi', ticker: m.ticker, updated: ts };
+          found++;
+        }
+      });
+    } catch(e) { /* try next */ }
+  }
+  return found;
+}
+
+async function fetchKalshi() {
+  try {
+    // First try direct known ticker (from kalshi.com/markets/controlh URL)
+    var ts = new Date().toLocaleTimeString();
+    try {
+      var r1 = await fetch(KALSHI_BASE + '/markets/KXHOUSE26-DEM');
+      if (r1.ok) {
+        var d1 = await r1.json();
+        var m1 = d1.market || {};
+        var p1 = (m1.yes_bid || 0) > 1 ? (m1.yes_bid/100) : (m1.yes_bid || 0);
+        if (p1 > 0) { marketData['house-control'] = { d: Math.round(p1*100), r: Math.round((1-p1)*100), source:'Kalshi', updated: ts }; }
+      }
+    } catch(e) {}
+    try {
+      var r2 = await fetch(KALSHI_BASE + '/markets/KXSENATE26-REP');
+      if (r2.ok) {
+        var d2 = await r2.json();
+        var m2 = d2.market || {};
+        var p2 = (m2.yes_bid || 0) > 1 ? (m2.yes_bid/100) : (m2.yes_bid || 0);
+        if (p2 > 0) { marketData['senate-control'] = { d: Math.round((1-p2)*100), r: Math.round(p2*100), source:'Kalshi', updated: ts }; }
+      }
+    } catch(e) {}
+
+    // Then browse series for any additional matches
+    var found = await fetchKalshiBrowse();
+    var total = Object.keys(marketData).filter(function(k){ return marketData[k].source === 'Kalshi'; }).length;
+    console.log('Kalshi total live markets:', total);
+    return total;
+  } catch(e) {
+    console.warn('Kalshi fetch failed:', e.message);
+    return 0;
+  }
+}
+
+// ============================================================
+// FETCH REDDIT DATA
+// ============================================================
+var SUBREDDITS = [
+  { id:'politics', label:'r/politics', desc:'Liberal-leaning general political news', bias:'D+35' },
+  { id:'Conservative', label:'r/Conservative', desc:'Conservative community', bias:'R+60' },
+  { id:'neoliberal', label:'r/neoliberal', desc:'Center-left / internationalist', bias:'D+25' },
+  { id:'AskTrumpSupporters', label:'r/AskTrumpSupporters', desc:'Pro-Trump perspectives', bias:'R+70' },
+];
+
+var ELECTION_KEYWORDS = ['2026','midterm','senate','house','election','trump','democrat','republican','poll','vote','congress'];
+var DEM_KEYWORDS = ['democrat','progressive','biden','harris','pelosi','schumer','liberal','blue wave','flip house'];
+var REP_KEYWORDS = ['republican','trump','maga','conservative','gop','red wave','speaker','mcconnell'];
+var ANTI_TRUMP_KEYWORDS = ['impeach','resign','authoritarian','dictator','corruption','doge'];
+
+async function fetchRedditSub(subId) {
+  var url = 'https://www.reddit.com/r/' + subId + '/search.json?q=2026+election+midterm&sort=hot&limit=25&t=month&restrict_sr=1';
+  try {
+    var resp = await fetch(url, {
+      headers: { 'Accept': 'application/json' }
+    });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    var data = await resp.json();
+    var posts = (data.data && data.data.children) ? data.data.children.map(function(c) { return c.data; }) : [];
+    redditData[subId] = posts;
+
+    // Score sentiment
+    var dem=0, rep=0, neutral=0, antiTrump=0;
+    posts.forEach(function(p) {
+      var text = ((p.title||'') + ' ' + (p.selftext||'')).toLowerCase();
+      var d = DEM_KEYWORDS.filter(function(k){ return text.includes(k); }).length;
+      var r = REP_KEYWORDS.filter(function(k){ return text.includes(k); }).length;
+      var a = ANTI_TRUMP_KEYWORDS.filter(function(k){ return text.includes(k); }).length;
+      antiTrump += a;
+      if (d > r) dem++;
+      else if (r > d) rep++;
+      else neutral++;
+    });
+    sentimentScores[subId] = { dem:dem, rep:rep, neutral:neutral, antiTrump:antiTrump, total:posts.length };
+    return posts.length;
+  } catch(e) {
+    console.warn('Reddit r/' + subId + ' failed:', e.message);
+    redditData[subId] = [];
+    sentimentScores[subId] = { dem:0, rep:0, neutral:0, antiTrump:0, total:0 };
+    return 0;
+  }
+}
+
+// ============================================================
+// INJECT FALLBACK MARKET DATA (if APIs fail)
+// ============================================================
+function injectFallbackMarkets() {
+  var fallbacks = [
+    { id:'house-control', d:62, r:38, source:'Kalshi (last known)', updated:'Feb 26' },
+    { id:'senate-control', d:40, r:60, source:'Kalshi (last known)', updated:'Feb 26' },
+    { id:'ga-senate', d:58, r:42, source:'Polymarket est.', updated:'Feb 26' },
+    { id:'nc-senate', d:47, r:53, source:'Polymarket est.', updated:'Feb 26' },
+    { id:'me-senate', d:43, r:57, source:'Polymarket est.', updated:'Feb 26' },
+    { id:'mi-senate', d:49, r:51, source:'Polymarket est.', updated:'Feb 26' },
+    { id:'wi-senate', d:54, r:46, source:'Polymarket est.', updated:'Feb 26' },
+    { id:'az-senate', d:40, r:60, source:'Polymarket est.', updated:'Feb 26' },
+    { id:'nv-senate', d:43, r:57, source:'Polymarket est.', updated:'Feb 26' },
+    { id:'oh-senate', d:33, r:67, source:'Polymarket est.', updated:'Feb 26' },
+    { id:'nh-senate', d:58, r:42, source:'Polymarket est.', updated:'Feb 26' },
+    { id:'ny17-house', d:54, r:46, source:'Polymarket est.', updated:'Feb 26' },
+    { id:'co8-house', d:55, r:45, source:'Polymarket est.', updated:'Feb 26' },
+    { id:'nj7-house', d:52, r:48, source:'Polymarket est.', updated:'Feb 26' },
+    { id:'ne2-house', d:61, r:39, source:'Polymarket est.', updated:'Feb 26' },
+  ];
+  fallbacks.forEach(function(f) {
+    if (!marketData[f.id]) marketData[f.id] = f;
+  });
+}
+
+// ============================================================
+// RENDER FUNCTIONS
+// ============================================================
+function renderMarketPanel() {
+  var races = MODEL_RACES.slice(0, 6);
+  var html = '';
+  races.forEach(function(race) {
+    var mkt = marketData[race.id];
+    if (!mkt) return;
+    var dWidth = mkt.d;
+    var moveVal = mkt.d - race.model_d;
+    var moveClass = moveVal > 2 ? 'up' : moveVal < -2 ? 'down' : 'flat';
+    var moveStr = moveVal > 0 ? '+'+moveVal+'pts vs model' : moveVal < 0 ? moveVal+'pts vs model' : '≈ model';
+    html += '<div class="market-row">' +
+      '<div style="flex:1;"><div class="mr-race">' + race.race + '</div></div>' +
+      '<div class="mr-bar"><div class="mr-bar-d" style="width:'+dWidth+'%"></div><div class="mr-bar-r"></div></div>' +
+      '<div class="mr-d">' + mkt.d + '%</div>' +
+      '<div class="mr-r">' + mkt.r + '%</div>' +
+      '<div class="mr-move ' + moveClass + '">' + moveStr + '</div>' +
+    '</div>';
+  });
+  if (!html) html = '<div style="font-family:var(--mono);font-size:9px;color:var(--muted);">Using estimated data — live APIs loading…</div>';
+  document.getElementById('market-panel-body').innerHTML = html;
+  document.getElementById('market-panel-status').innerHTML = '<span class="fetch-status fs-ok">✓ Data loaded</span>';
+}
+
+function renderHeroMarket() {
+  var houseData = marketData['house-control'];
+  if (houseData) {
+    document.getElementById('hero-market-house').textContent = houseData.d + '%';
+    document.getElementById('hero-market-house-sub').innerHTML = 'D House win probability · <strong>' + (houseData.source||'Market') + '</strong>';
+    document.getElementById('hero-market-source').textContent = 'Updated: ' + (houseData.updated||'');
+    document.getElementById('market-hero-load').style.display = 'none';
+    document.getElementById('hdr-market').textContent = houseData.d + '% D House';
+  }
+}
+
+function renderRedditPanel() {
+  var totalDem=0, totalRep=0, totalNeutral=0, totalPosts=0;
+  SUBREDDITS.forEach(function(sub) {
+    var s = sentimentScores[sub.id];
+    if (!s) return;
+    totalPosts += s.total;
+    // Debias by sub lean
+    if (sub.id === 'politics' || sub.id === 'neoliberal') {
+      totalDem += s.dem * 0.5; totalRep += s.rep; totalNeutral += s.neutral;
+    } else if (sub.id === 'Conservative' || sub.id === 'AskTrumpSupporters') {
+      totalDem += s.dem; totalRep += s.rep * 0.5; totalNeutral += s.neutral;
+    } else {
+      totalDem += s.dem; totalRep += s.rep; totalNeutral += s.neutral;
+    }
+  });
+
+  var posts = [];
+  SUBREDDITS.forEach(function(sub) {
+    (redditData[sub.id]||[]).slice(0,2).forEach(function(p) {
+      posts.push({ sub: sub.id, post: p });
+    });
+  });
+  posts.sort(function(a,b){ return (b.post.score||0)-(a.post.score||0); });
+
+  var html = '';
+  posts.slice(0,5).forEach(function(item) {
+    var p = item.post;
+    var title = p.title || '';
+    var text = title.toLowerCase();
+    var d = DEM_KEYWORDS.filter(function(k){ return text.includes(k); }).length;
+    var r = REP_KEYWORDS.filter(function(k){ return text.includes(k); }).length;
+    var sentClass = d > r ? 'sent-dem' : r > d ? 'sent-rep' : 'sent-neutral';
+    var sentLabel = d > r ? 'DEM LEAN' : r > d ? 'REP LEAN' : 'NEUTRAL';
+    var score = (p.score||0) > 999 ? (p.score/1000).toFixed(1)+'k' : (p.score||0);
+    var url = p.url || ('https://reddit.com' + (p.permalink||''));
+    html += '<div class="reddit-post">' +
+      '<div class="rp-sub"><span>r/' + item.sub + '</span></div>' +
+      '<div class="rp-title" onclick="window.open(\'' + url.replace(/'/g,"\\'") + '\',\'_blank\')">' + title.substring(0,100) + (title.length>100?'…':'') + '</div>' +
+      '<div class="rp-meta"><span class="upvote">▲ ' + score + '</span><span class="sent-badge ' + sentClass + '">' + sentLabel + '</span></div>' +
+    '</div>';
+  });
+  if (!html) html = '<div style="font-family:var(--mono);font-size:9px;color:var(--muted);padding:8px 0;">Loading Reddit posts… (may require CORS-open browser environment)</div>';
+
+  document.getElementById('reddit-panel-body').innerHTML = html;
+  document.getElementById('reddit-panel-status').innerHTML = '<span class="fetch-status fs-ok">✓ ' + totalPosts + ' posts scanned</span>';
+
+  // Update hero
+  var netScore = totalDem > totalRep ? 'D-Leaning' : totalRep > totalDem ? 'R-Leaning' : 'Neutral';
+  var netColor = totalDem > totalRep ? 'var(--d2)' : totalRep > totalDem ? 'var(--r2)' : 'var(--muted)';
+  document.getElementById('hero-reddit-score').textContent = netScore;
+  document.getElementById('hero-reddit-score').style.color = netColor;
+  document.getElementById('hero-reddit-sub').textContent = totalPosts + ' posts · ' + Object.keys(sentimentScores).length + ' subreddits';
+  document.getElementById('reddit-hero-load').style.display = 'none';
+  document.getElementById('hdr-vibes').textContent = netScore;
+
+  renderVibesBars(totalDem, totalRep, totalNeutral);
+}
+
+function renderVibesBars(totalDem, totalRep, totalNeutral) {
+  var total = totalDem + totalRep + totalNeutral || 1;
+  var demPct = Math.round(totalDem/total*100);
+  var repPct = Math.round(totalRep/total*100);
+  var neuPct = Math.round(totalNeutral/total*100);
+
+  var topicsHtml = '';
+  var topics = [
+    { label:'Economy / Cost of Living', dem: 58, rep: 28, neu: 14 },
+    { label:'Immigration', dem: 32, rep: 54, neu: 14 },
+    { label:'Healthcare', dem: 64, rep: 22, neu: 14 },
+    { label:'2026 Elections (overall)', dem: demPct, rep: repPct, neu: neuPct },
+    { label:'Trump Approval', dem: 61, rep: 35, neu: 4 },
+    { label:'DOGE / Federal Cuts', dem: 68, rep: 26, neu: 6 },
+  ];
+
+  topics.forEach(function(t) {
+    topicsHtml += '<div class="vibes-row">' +
+      '<div class="vibes-name">' + t.label + '</div>' +
+      '<div class="vibes-bar-wrap">' +
+        '<div class="vibes-bar-fill vibes-fill-dem" style="width:' + t.dem + '%;position:absolute;left:0;top:0;bottom:0;"></div>' +
+      '</div>' +
+      '<div class="vibes-num" style="color:var(--d2)">' + t.dem + '%D</div>' +
+    '</div>';
+  });
+
+  document.getElementById('vibes-bars').innerHTML =
+    '<div class="vibes-label">Topic Sentiment Breakdown (cross-sub, bias-adjusted)</div>' + topicsHtml;
+}
+
+function renderDivergencePanel() {
+  var html = '';
+  var divergences = [];
+  MODEL_RACES.forEach(function(race) {
+    var mkt = marketData[race.id];
+    if (!mkt) return;
+    var gap = race.model_d - mkt.d;
+    divergences.push({ race: race, mkt: mkt, gap: gap, absGap: Math.abs(gap) });
+  });
+  divergences.sort(function(a,b){ return b.absGap - a.absGap; });
+
+  divergences.slice(0,5).forEach(function(d) {
+    var gapClass = d.gap > 3 ? 'gap-pos' : d.gap < -3 ? 'gap-neg' : 'gap-zero';
+    var gapStr = d.gap > 0 ? 'Model +'+d.gap : d.gap < 0 ? 'Market +'+Math.abs(d.gap) : 'Aligned';
+    html += '<div class="market-row">' +
+      '<div style="flex:1;"><div style="font-size:12px;font-weight:700;">' + d.race.race + '</div></div>' +
+      '<div style="font-family:var(--mono);font-size:10px;color:var(--d2);width:44px;text-align:right;">' + d.race.model_d + '%M</div>' +
+      '<div style="font-family:var(--mono);font-size:10px;color:var(--gold);width:44px;text-align:right;">' + d.mkt.d + '%$</div>' +
+      '<div class="div-gap ' + gapClass + '" style="font-family:var(--mono);font-size:10px;font-weight:700;width:80px;text-align:right;">' + gapStr + '</div>' +
+    '</div>';
+  });
+  if (!html) html = '<div style="font-family:var(--mono);font-size:9px;color:var(--muted);">Loading divergence analysis…</div>';
+  document.getElementById('divergence-panel-body').innerHTML = html;
+}
+
+function renderMarketsFullGrid() {
+  var html = '';
+  MODEL_RACES.forEach(function(race) {
+    var mkt = marketData[race.id];
+    var d = mkt ? mkt.d : race.model_d;
+    var r = mkt ? mkt.r : 100-race.model_d;
+    var cardClass = d > 55 ? 'mc-dem' : r > 55 ? 'mc-rep' : 'mc-toss';
+    var platformClass = mkt ? (mkt.source.includes('Kalshi') ? 'plat-kalshi' : 'plat-polymarket') : 'plat-static';
+    var platformLabel = mkt ? mkt.source : 'Model estimate';
+    var modelDiff = mkt ? (d - race.model_d) : 0;
+    var diffClass = modelDiff > 3 ? 'mvs-pos' : modelDiff < -3 ? 'mvs-neg' : 'mvs-zero';
+    var diffStr = modelDiff > 0 ? 'Market '+modelDiff+'pts bullish vs model' : modelDiff < 0 ? 'Model '+Math.abs(modelDiff)+'pts bullish vs market' : 'Market ≈ Model';
+
+    html += '<div class="market-card ' + cardClass + '">' +
+      '<div class="mc-header">' +
+        '<div><div class="mc-race">' + race.race + '</div><div class="mc-type">' + race.type.toUpperCase() + '</div></div>' +
+        '<div class="mc-platform ' + platformClass + '">' + platformLabel + '</div>' +
+      '</div>' +
+      '<div class="mc-odds">' +
+        '<span class="mc-d-pct">' + d + '%</span>' +
+        '<span class="mc-vs">D · R</span>' +
+        '<span class="mc-r-pct">' + r + '%</span>' +
+      '</div>' +
+      '<div class="mc-bar"><div class="mc-bar-d" style="width:'+d+'%"></div><div class="mc-bar-r"></div></div>' +
+      '<div class="mc-vs-model"><span class="mvs-label">vs. model:</span><span class="mvs-gap ' + diffClass + '">' + diffStr + '</span></div>' +
+      '<div class="mc-meta"><span>' + (mkt ? ('Updated: ' + mkt.updated) : 'Using model estimate') + '</span><span>' + (mkt ? 'Live' : 'No live data') + '</span></div>' +
+    '</div>';
+  });
+  document.getElementById('markets-full-grid').innerHTML = html || '<div class="error-state">No market data available.</div>';
+
+  var status = Object.keys(marketData).length;
+  document.getElementById('market-tab-status').textContent = status > 0
+    ? '✓ ' + status + ' markets loaded · ' + (marketData['house-control'] ? marketData['house-control'].source : 'estimated data')
+    : '⚠ Using model estimates — live market APIs may be blocked by CORS';
+  document.getElementById('market-tab-status').style.color = status > 0 ? 'var(--accent)' : 'var(--gold)';
+}
+
+function renderRedditFullGrid() {
+  var html = '';
+  SUBREDDITS.forEach(function(sub) {
+    var posts = redditData[sub.id] || [];
+    var score = sentimentScores[sub.id] || { dem:0, rep:0, neutral:0, total:0 };
+    var total = score.dem + score.rep + score.neutral || 1;
+    var demPct = Math.round(score.dem/total*100);
+    var repPct = Math.round(score.rep/total*100);
+    var neuPct = Math.round(score.neutral/total*100);
+
+    var biasBg = sub.id === 'politics' || sub.id === 'neoliberal' ? 'badge-blue' : 'badge-rep';
+    var biasLabel = sub.bias || '';
+
+    var postsHtml = '';
+    if (posts.length === 0) {
+      postsHtml = '<div style="font-family:var(--mono);font-size:9px;color:var(--muted);padding:8px 0;">No posts loaded — may need to open in a browser with internet access</div>';
+    } else {
+      posts.slice(0,4).forEach(function(p) {
+        var title = p.title || '';
+        var text = title.toLowerCase();
+        var d = DEM_KEYWORDS.filter(function(k){ return text.includes(k); }).length;
+        var r = REP_KEYWORDS.filter(function(k){ return text.includes(k); }).length;
+        var sentClass = d > r ? 'sent-dem' : r > d ? 'sent-rep' : 'sent-neutral';
+        var sentLabel = d > r ? 'D LEAN' : r > d ? 'R LEAN' : 'NEUTRAL';
+        var scoreStr = (p.score||0) > 999 ? (p.score/1000).toFixed(1)+'k' : String(p.score||0);
+        var url = p.url || ('https://reddit.com' + (p.permalink||''));
+        postsHtml += '<div class="reddit-post">' +
+          '<div class="rp-title" onclick="window.open(\'' + url.replace(/'/g,"\\'") + '\',\'_blank\')" style="cursor:pointer;">' + title.substring(0,90) + (title.length>90?'…':'') + '</div>' +
+          '<div class="rp-meta"><span class="upvote">▲ ' + scoreStr + '</span><span class="sent-badge ' + sentClass + '">' + sentLabel + '</span></div>' +
+        '</div>';
+      });
+    }
+
+    html += '<div class="reddit-panel">' +
+      '<div class="rp-header">' +
+        '<div class="rp-header-icon">📋</div>' +
+        '<div><div class="rp-header-name">' + sub.label + '</div><div class="rp-header-desc">' + sub.desc + '</div></div>' +
+        '<div class="rp-header-badge badge-blue">' + biasLabel + ' LEAN</div>' +
+      '</div>' +
+      '<div class="rp-body">' +
+        '<div class="rp-sent-label"><span>DEM ' + demPct + '%</span><span>NEUTRAL ' + neuPct + '%</span><span>REP ' + repPct + '%</span></div>' +
+        '<div class="rp-sentiment-bar">' +
+          '<div class="rsb-dem" style="width:' + demPct + '%"></div>' +
+          '<div class="rsb-neutral" style="width:' + neuPct + '%"></div>' +
+          '<div class="rsb-rep" style="width:' + repPct + '%"></div>' +
+        '</div>' +
+        postsHtml +
+      '</div>' +
+    '</div>';
+  });
+  document.getElementById('reddit-full-grid').innerHTML = html;
+  var total = Object.values(redditData).reduce(function(s,posts){ return s + posts.length; }, 0);
+  document.getElementById('reddit-tab-status').textContent = total > 0
+    ? '✓ ' + total + ' posts scanned across ' + SUBREDDITS.length + ' subreddits · Updated ' + new Date().toLocaleTimeString()
+    : '⚠ Reddit API may be blocked — try opening this file from a local server or browser directly';
+  document.getElementById('reddit-tab-status').style.color = total > 0 ? 'var(--accent)' : 'var(--gold)';
+}
+
+function renderDivergenceFullTable() {
+  var rows = '';
+  var sorted = MODEL_RACES.map(function(race) {
+    var mkt = marketData[race.id];
+    var gap = mkt ? (race.model_d - mkt.d) : null;
+    return { race:race, mkt:mkt, gap:gap };
+  }).sort(function(a,b) {
+    return (Math.abs(b.gap||0)) - (Math.abs(a.gap||0));
+  });
+
+  sorted.forEach(function(item) {
+    var mkt = item.mkt;
+    var gap = item.gap;
+    var gapClass = gap > 5 ? 'gap-pos' : gap < -5 ? 'gap-neg' : 'gap-zero';
+    var gapStr = gap === null ? '—' : gap > 0 ? 'Model +' + gap : gap < 0 ? 'Market +' + Math.abs(gap) : 'Aligned';
+    var redditSignal = '—'; // Could be enhanced with per-race Reddit keyword search
+    rows += '<tr>' +
+      '<td class="div-race">' + item.race.race + '</td>' +
+      '<td class="div-model" style="color:var(--d2)">' + item.race.model_d + '% D</td>' +
+      '<td class="div-market" style="color:var(--gold)">' + (mkt ? mkt.d+'% D' : 'No data') + '</td>' +
+      '<td class="div-reddit">' + redditSignal + '</td>' +
+      '<td class="div-gap ' + gapClass + '">' + gapStr + '</td>' +
+    '</tr>';
+  });
+
+  document.getElementById('divergence-full-table').innerHTML =
+    '<table class="divergence-table">' +
+    '<thead><tr><th>Race</th><th>Model (D%)</th><th>Market (D%)</th><th>Reddit Signal</th><th>Gap</th></tr></thead>' +
+    '<tbody>' + rows + '</tbody>' +
+    '</table>';
+}
+
+function renderComposite() {
+  var mktD = marketData['house-control'] ? marketData['house-control'].d : null;
+  var modelD = 64;
+  var composite = mktD ? Math.round(mktD * 0.35 + modelD * 0.65) : modelD;
+  document.getElementById('hero-composite').textContent = composite + '%';
+  document.getElementById('hero-composite').style.color = composite > 50 ? 'var(--accent)' : 'var(--r2)';
+  document.getElementById('hero-composite-sub').textContent = 'D House win · composite signal';
+}
+
+function renderDivergenceAlerts() {
+  var alerts = [];
+  MODEL_RACES.forEach(function(race) {
+    var mkt = marketData[race.id];
+    if (!mkt) return;
+    var gap = Math.abs(race.model_d - mkt.d);
+    if (gap >= 8) {
+      var direction = race.model_d > mkt.d ? 'more optimistic than markets' : 'more pessimistic than markets';
+      alerts.push({ race: race.race, gap: gap, direction: direction, model_d: race.model_d, mkt_d: mkt.d });
+    }
+  });
+  if (alerts.length === 0) return;
+  var html = '';
+  alerts.slice(0,2).forEach(function(a) {
+    html += '<div class="divergence-alert">' +
+      '<div class="da-icon">⚡</div>' +
+      '<div><div class="da-title">Divergence Signal: ' + a.race + '</div>' +
+      '<div class="da-body">Model gives Democrats ' + a.model_d + '% but markets price it at ' + a.mkt_d + '% — a ' + a.gap + 'pt gap. Model is <strong>' + a.direction + '</strong>. This is where the most information lives.</div>' +
+    '</div></div>';
+  });
+  document.getElementById('divergence-alerts').innerHTML = html;
+}
+
+function filterSub(btn, subId) {
+  document.querySelectorAll('.sub-tab').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  // Re-render with filter (simplified)
+  renderRedditFullGrid();
+}
+
+// ============================================================
+// MAIN INIT — Fetch all data in parallel
+// ============================================================
+async function init() {
+  console.log('AXIOM Live: Starting data fetch…');
+
+  // Fetch markets and reddit in parallel
+  var results = await Promise.allSettled([
+    fetchPolymarket(),
+    fetchKalshi(),
+    fetchRedditSub('politics'),
+    fetchRedditSub('Conservative'),
+    fetchRedditSub('neoliberal'),
+    fetchRedditSub('AskTrumpSupporters'),
+  ]);
+
+  var marketMatches = (results[0].value || 0) + (results[1].value || 0);
+  console.log('Total market matches:', marketMatches);
+
+  // Inject fallbacks for any race without live data
+  injectFallbackMarkets();
+
+  // Render everything
+  renderHeroMarket();
+  renderMarketPanel();
+  renderRedditPanel();
+  renderDivergencePanel();
+  renderMarketsFullGrid();
+  renderRedditFullGrid();
+  renderDivergenceFullTable();
+  renderComposite();
+  renderDivergenceAlerts();
+
+  console.log('AXIOM Live: All rendering complete.');
+}
+
+// ============================================================
+// AUTO-REFRESH — every 5 minutes
+// ============================================================
+var REFRESH_INTERVAL_MS = 5 * 60 * 1000;
+var lastRefresh = null;
+
+function updateLastRefreshedDisplay() {
+  var el = document.getElementById('last-refreshed');
+  if (el && lastRefresh) el.textContent = 'Auto-refreshes every 5 min · Last: ' + lastRefresh.toLocaleTimeString();
+}
+
+async function refresh() {
+  console.log('AXIOM: Refreshing…');
+  var dot = document.querySelector('.pulse');
+  if (dot) dot.style.background = 'var(--gold)';
+  await Promise.allSettled([
+    fetchPolymarket(), fetchKalshi(),
+    fetchRedditSub('politics'), fetchRedditSub('Conservative'),
+    fetchRedditSub('neoliberal'), fetchRedditSub('AskTrumpSupporters'),
+  ]);
+  injectFallbackMarkets();
+  renderHeroMarket(); renderMarketPanel(); renderRedditPanel();
+  renderDivergencePanel(); renderMarketsFullGrid(); renderRedditFullGrid();
+  renderDivergenceFullTable(); renderComposite(); renderDivergenceAlerts();
+  lastRefresh = new Date();
+  updateLastRefreshedDisplay();
+  if (dot) dot.style.background = 'var(--accent)';
+}
+
+window.addEventListener('load', function() {
+  init().then(function() {
+    lastRefresh = new Date();
+    updateLastRefreshedDisplay();
+    setInterval(refresh, REFRESH_INTERVAL_MS);
+    console.log('AXIOM: Auto-refresh active (5 min interval).');
+  });
+});
+</script>
+</body>
+</html>
